@@ -1,0 +1,48 @@
+{
+  "name": "multiWatch",
+  "version": "1.0.0",
+  "description": "Alpha v1.0",
+  "main": "index.js",
+  "author": "Karol 'Luc4r' Kapłanek",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.0.1",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "eslint": "^4.10.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-config-prettier": "^2.7.0",
+    "eslint-config-react": "^1.1.7",
+    "eslint-loader": "^1.9.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-prettier": "^2.3.1",
+    "eslint-plugin-react": "^7.4.0",
+    "file-loader": "^1.1.5",
+    "prettier": "^1.7.4",
+    "redux-devtools": "^3.4.1",
+    "url-loader": "^0.6.2",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.3"
+  },
+  "dependencies": {
+    "css-element-queries": "^1.0.2",
+    "prop-types": "^15.6.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "styled-components": "^2.2.3"
+  },
+  "scripts": {
+    "prettify": "prettier --write --single-quote --print-width=100 --arrow-parens=always **\\*.jsx",
+    "lint": "eslint **\\*.js",
+    "bundle": "webpack",
+    "bundleWatch": "webpack --watch",
+    "start": "webpack-dev-server --host 0.0.0.0"
+  }
+}
