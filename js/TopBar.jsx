@@ -37,8 +37,8 @@ class TopBar extends React.Component {
 
   onInputChange = () => {
     const enteredString = document.getElementById('searchChannel').value;
-    const format = /[`~!@#$%^&*()+\-=[\]{};':"\\|,.<>/?]/;
-    if (enteredString.indexOf(' ') !== -1) {
+    const format = /[`~!@#$%^&*()+=[\]{};'"\\|,<>?]/;
+    if (enteredString.includes(' ')) {
       this.props.addAlert('There are no spaces in channel names');
       return;
     } else if (format.test(enteredString)) {
@@ -49,29 +49,44 @@ class TopBar extends React.Component {
   };
 
   addStream = () => {
-    const enteredString = document.getElementById('searchChannel').value;
-    const link = window.location.hash;
+    // TO DO: same youtube channel - entered ID and NAME.
+    let enteredString = document.getElementById('searchChannel').value;
+    if (enteredString.includes('.com/') || enteredString.includes('.tv/')) {
+      // user pasted link instead of channel name/ID
+      const lastSlash = enteredString.lastIndexOf('/') + 1;
+      enteredString = enteredString.substring(lastSlash, enteredString.length);
+    }
+    const enteredStringLowerCase = enteredString.toLowerCase();
+    const platform = document.getElementById('topBarSelectPlatform').value;
+    const link = window.location.hash.toLowerCase();
+    // Optional errors:
     if (enteredString.length <= 1) {
       this.props.addAlert('Channel name must be at least 2 charakters long');
       return;
-    }
-    if (link.indexOf(enteredString) !== -1) {
-      const dividedStreamNames = link.split('/');
-      for (let i = 1; i < dividedStreamNames.length; i += 1) {
-        if (dividedStreamNames[i] === enteredString) {
-          this.props.addAlert('This stream is already opened');
-          return;
-        }
-      }
     }
     if (this.props.openedStreams > 7) {
       this.props.addAlert('You cannot open more than 8 streams... sorry!');
       return;
     }
+    if (link.includes(enteredStringLowerCase)) {
+      const dividedStreamNames = link.split('#');
+      for (let i = 1; i < dividedStreamNames.length; i += 1) {
+        const streamName = dividedStreamNames[i].slice(0, dividedStreamNames[i].indexOf('('));
+        const streamPlatform = dividedStreamNames[i].slice(
+          dividedStreamNames[i].indexOf('(') + 1,
+          dividedStreamNames[i].length - 1
+        );
+        if (streamName === enteredStringLowerCase && streamPlatform === platform) {
+          this.props.addAlert('This stream is already opened');
+          return;
+        }
+      }
+    }
+
     this.props.openIt(enteredString);
     this.setState({ searchTerm: '' });
     const URL = window.location.hash;
-    window.history.pushState('', '', `${URL}#${this.state.searchTerm}`);
+    window.history.pushState('', '', `${URL}#${enteredString}(${platform})`);
   };
 
   specialInputEvents = e => {
@@ -146,22 +161,6 @@ class TopBar extends React.Component {
               <p>More soon™</p>
             </OptionsMenu>
           </Stripe>
-          {/* <Stripe
-            style={{
-              left: '172px',
-              opacity: topBarElementsOpacity,
-              visibility: topBarElementsVisibility
-            }}
-          >
-            <div>
-              <svg viewBox="0 0 32 32" style={{height: '26px', padding: '1px'}}>
-                <circle cx="16" cy="16" r="15" />
-                <path d="M10,12a6,6,0,1,1,6,6v5" />
-                <line x1="15" x2="17" y1="26" y2="26" />
-              </svg>
-            </div>
-          </Stripe>
-          */}
         </div>
         <SearchInputWrapper
           style={{
@@ -169,18 +168,16 @@ class TopBar extends React.Component {
             visibility: topBarElementsVisibility
           }}
         >
-          <select onChange={() => this.setSelectedChat()}>
-            <option value="twitch">Twitch</option>
-            <option value="youtube" disabled>
-              YouTube - WIP
-            </option>
-            <option value="smashcast" disabled>
+          <select id="topBarSelectPlatform">
+            <option value="t">Twitch</option>
+            <option value="yt">YouTube - WIP</option>
+            <option value="sc" disabled>
               Smashcast - WIP
             </option>
           </select>
           <input
             id="searchChannel"
-            placeholder="Enter channel name..."
+            placeholder="Enter channel name/ID..."
             value={searchTerm}
             onChange={this.onInputChange}
             onKeyDown={this.specialInputEvents}
@@ -209,6 +206,14 @@ TopBar.propTypes = {
   toggleChat: PropTypes.func.isRequired
 };
 
+function mapStateToProps(state) {
+  return {
+    isTopBarHidden: state.isTopBarHidden,
+    openedStreams: state.openedStreams,
+    showChat: state.showChat
+  };
+}
+
 function mapDispatchToProps(dispatch) {
   return {
     openIt: channelName => {
@@ -226,14 +231,6 @@ function mapDispatchToProps(dispatch) {
     toggleChat: () => {
       dispatch({ type: 'CHAT - TOGGLE' });
     }
-  };
-}
-
-function mapStateToProps(state) {
-  return {
-    isTopBarHidden: state.isTopBarHidden,
-    openedStreams: state.openedStreams,
-    showChat: state.showChat
   };
 }
 

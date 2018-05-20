@@ -12,7 +12,6 @@ const VideoMenuWrapper = styled.div`
 
   span {
     float: left;
-    width: calc(100% - 128px);
     height: 40px;
     text-align: center;
     line-height: 25px;
@@ -30,7 +29,7 @@ const VideoMenuWrapper = styled.div`
 const VidMenuButton = styled.div`
   float: right;
   height: 35px;
-  width: 30px;
+  width: 40px;
   text-align: center;
   color: #ffffff;
   font-size: 12px;

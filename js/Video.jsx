@@ -14,8 +14,9 @@ class Video extends React.Component {
   constructor(props) {
     super(props);
     let initialState = {
+      channelID: props.channelName,
+      channelName: props.channelName,
       isLoading: true,
-      opacity: 0,
       quadrant: 0,
       onRectangle: false,
       isPinned: false,
@@ -24,15 +25,52 @@ class Video extends React.Component {
       lastMarginRight: getWindowWidth(),
       lastWindowHeight: getWindowHeight()
     };
-    const cachedState = JSON.parse(localStorage.getItem(`${props.channelName}State`));
+    const cachedState = JSON.parse(
+      localStorage.getItem(`${this.props.channelName}(${this.props.platform})State`)
+    );
     if (initialState !== cachedState && cachedState !== null) {
       initialState = Object.assign({}, cachedState, { isLoading: true });
     }
     this.state = initialState;
     this.videoElement = null;
   }
+  componentWillMount() {
+    if (this.props.platform === 'yt') {
+      // get channelID for finding a livestream
+      const API = 'https://www.googleapis.com/youtube/v3/channels?part=snippet&forUsername=';
+      const APID = 'https://www.googleapis.com/youtube/v3/channels?part=snippet&id=';
+      const KEY = '&key=AIzaSyAckbMFR-zOKefEnGSWGbiESpHl81VNOYc';
+      const searchChannel = this.state.channelID;
+
+      fetch(API + searchChannel + KEY)
+        .then(response => response.json())
+        .then(data => {
+          if (data.pageInfo.totalResults !== 0) {
+            // user entered channel name
+            this.setState({
+              channelID: data.items[0].id,
+              channelName: data.items[0].snippet.customUrl
+            });
+          } else {
+            // user might enter channel ID
+            fetch(APID + searchChannel + KEY)
+              .then(response => response.json())
+              .then(data2 => {
+                if (data2.pageInfo.totalResults !== 0) {
+                  // user entered channel ID
+                  this.setState({
+                    channelID: data2.items[0].id,
+                    channelName: data2.items[0].snippet.customUrl
+                  });
+                }
+              });
+          }
+        });
+    }
+  }
   componentDidMount() {
-    const videoElement = document.getElementById(this.props.channelName);
+    const enteredName = `${this.props.channelName}(${this.props.platform})`;
+    const videoElement = document.getElementById(enteredName);
     this.resize = new ResizeSensor(document.getElementById('videoArea'), () => {
       this.updateRectanglePositionOnWindowResize();
     });
@@ -46,18 +84,18 @@ class Video extends React.Component {
 
     localStorage.setItem('openedStreams', window.location.hash);
     setTimeout(() => {
-      this.setState({ opacity: 1 });
+      videoElement.style.opacity = '1';
     });
     if (this.state.isPinned === false)
       // On reloading pages with pinned videos dont do anything
       setTimeout(() => {
-        document.getElementById(this.props.channelName).style.transitionDuration = '0s';
+        document.getElementById(enteredName).style.transitionDuration = '0s';
       }, 500);
   }
   shouldComponentUpdate(nextProps) {
     if (
       this.props.openedStreams > nextProps.openedStreams &&
-      window.location.hash.indexOf(this.props.channelName) !== -1
+      window.location.hash.includes(`${this.props.channelName}(${this.props.platform})`)
     ) {
       setTimeout(() => {
         this.resize = new ResizeSensor(document.getElementById('videoArea'), () => {
@@ -68,7 +106,9 @@ class Video extends React.Component {
     return true;
   }
   componentWillUnmount() {
-    const videoElement = document.getElementById(this.props.channelName);
+    const videoElement = document.getElementById(
+      `${this.props.channelName}(${this.props.platform})`
+    );
     this.resize.detach(); // removing 1 = removing all => usage of shouldComponentUpdate
     window.removeEventListener('resize', this.updateRectanglePositionOnWindowResize);
     videoElement.removeEventListener('mousedown', this.onDown);
@@ -83,13 +123,14 @@ class Video extends React.Component {
 
   onDown = e => {
     if (this.state.isPinned === false) {
+      const enteredName = `${this.props.channelName}(${this.props.platform})`;
       const x = getX(e);
       const y = getY(e);
       this.setState({ lastX: x, lastY: y, onRectangle: true });
       // Disable all video/chat events
       iframeEventsDisable();
-      if (document.getElementById(`size${this.props.channelName}`).checked) {
-        const video = document.getElementById(this.props.channelName);
+      if (document.getElementById(`size${enteredName}`).checked) {
+        const video = document.getElementById(enteredName);
         const additionalHeight = this.getAdditionalHeight();
         const left = parseInt(video.style.left, 10);
         const top = parseInt(video.style.top, 10);
@@ -119,15 +160,15 @@ class Video extends React.Component {
 
   onMove = e => {
     if (!this.state.isPinned) {
-      const { channelName } = this.props;
-      const video = document.getElementById(channelName);
+      const enteredName = `${this.props.channelName}(${this.props.platform})`;
+      const video = document.getElementById(enteredName);
       const left = parseInt(video.style.left, 10);
       const top = parseInt(video.style.top, 10);
       const width = parseInt(video.style.width, 10);
       const height = parseInt(video.style.height, 10);
       const { onRectangle } = this.state;
-      const move = document.getElementById(`move${channelName}`).checked;
-      const size = document.getElementById(`size${channelName}`).checked;
+      const move = document.getElementById(`move${enteredName}`).checked;
+      const size = document.getElementById(`size${enteredName}`).checked;
 
       if (onRectangle === true) {
         const windowHeight = getWindowHeight();
@@ -188,8 +229,10 @@ class Video extends React.Component {
   };
 
   onLeave = () => {
-    iframeEventsEnable();
-    this.setState({ onRectangle: false });
+    if (this.state.onRectangle === true) {
+      iframeEventsEnable();
+      this.setState({ onRectangle: false });
+    }
   };
 
   getVideoProperties = (mouseMoveX, rectangleLeft, width, rectangleTop, height) => {
@@ -270,7 +313,7 @@ class Video extends React.Component {
 
   updateRectanglePositionOnWindowResize = () => {
     if (this.state.isPinned === false) {
-      const video = document.getElementById(this.props.channelName);
+      const video = document.getElementById(`${this.props.channelName}(${this.props.platform})`);
       const { lastMarginRight, lastWindowHeight } = this.state;
       const marginRight = this.getVideoAreaWidth();
       const windowHeight = getWindowHeight();
@@ -316,20 +359,24 @@ class Video extends React.Component {
   };
 
   render() {
-    const { isLoading, opacity } = this.state;
-    const { channelName, zIndex } = this.props;
-    localStorage.setItem(`${channelName}State`, JSON.stringify(this.state));
+    const { channelID, channelName, isLoading } = this.state;
+    const { platform, zIndex } = this.props;
+    const enteredName = `${this.props.channelName}(${platform})`;
+    localStorage.setItem(`${enteredName}State`, JSON.stringify(this.state));
+    let link = `https://player.twitch.tv/?&channel=${channelID}`;
+    if (platform === 'yt') {
+      link = `https://www.youtube.com/embed/live_stream?channel=${channelID}&autoplay=1`;
+    }
 
     return (
       <VideoWrapper
-        id={channelName}
+        id={enteredName}
         className="video"
         style={{
           top: 10,
           left: 10,
           width: 320,
           height: 180,
-          opacity,
           zIndex
         }}
       >
@@ -337,16 +384,17 @@ class Video extends React.Component {
         <VideoMenu
           parentState={this.state}
           channelName={channelName}
+          enteredName={enteredName}
           zIndex={zIndex}
           setParentState={childData => this.setState(childData)}
         />
         <iframe
-          title={channelName}
-          id={`stream${channelName}`}
+          title={`stream${enteredName}`}
+          id={`stream${enteredName}`}
           ref={i => {
             this.iframe = i;
           }}
-          src={`https://player.twitch.tv/?&channel=${channelName}`}
+          src={link}
           height="100%"
           width="100%"
           scrolling="false"
@@ -360,6 +408,7 @@ class Video extends React.Component {
 
 Video.propTypes = {
   channelName: PropTypes.string.isRequired,
+  platform: PropTypes.string.isRequired,
   zIndex: PropTypes.number.isRequired,
   isTopBarHidden: PropTypes.bool.isRequired,
   showChat: PropTypes.bool.isRequired,

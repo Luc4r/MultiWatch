@@ -19,16 +19,22 @@ const Chat = props => {
   return (
     <div
       style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         width: '100%',
         height: '100%',
-        lineHeight: '100%',
-        textAlign: 'center',
-        backgroundColor: '#222222',
+        backgroundColor: '#111111',
         opacity: 0.8,
         color: 'white'
       }}
     >
-      No chats available...
+      <iframe title="justLoad" style={{ display: 'none' }} onLoad={() => isLoading(false)} />
+      <p style={{ padding: '20px' }}>
+        No chats available... <br />
+        <br />
+        Still working on youtube comments... D:
+      </p>
     </div>
   );
 };

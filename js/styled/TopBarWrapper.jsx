@@ -68,6 +68,7 @@ const SearchInputWrapper = styled.div`
   input {
     padding: 3px 5px;
     height: 26px;
+    width: 180px;
     outline: none;
     box-sizing: border-box;
     border: 1px solid #444444;
@@ -82,7 +83,7 @@ const SearchInputWrapper = styled.div`
     box-sizing: border-box;
     background-color: #ffffff;
     border: 1px solid #444444;
-    border-left: 1px dashed #444444;
+    border-left: none;
   }
 `;
 
@@ -133,6 +134,10 @@ const OptionsMenu = styled.div`
 
     &:hover {
       background-color: #7199ed;
+      cursor: pointer;
+    }
+
+    label {
       cursor: pointer;
     }
   }

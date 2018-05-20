@@ -8,6 +8,7 @@ import Loading from './Loading';
 import { getWindowWidth } from './universalFunctions/windowProperties';
 import { getX } from './universalFunctions/getXY';
 import { iframeEventsDisable, iframeEventsEnable } from './universalFunctions/iframeEvents';
+import getStreamNames from './universalFunctions/getStreamNames';
 
 class ChatBox extends React.Component {
   constructor(props) {
@@ -43,8 +44,7 @@ class ChatBox extends React.Component {
     document.body.addEventListener('touchend', this.clickEnded);
   }
   shouldComponentUpdate(nextProps) {
-    const { selectedValue } = this.state;
-    if (nextProps.showChat === true && (this.props.showChat === false || selectedValue === '')) {
+    if (nextProps.showChat === true && this.props.showChat === false) {
       this.showChat();
     } else if (nextProps.showChat === false && this.props.showChat === true) {
       this.hideChat();
@@ -158,21 +158,30 @@ class ChatBox extends React.Component {
 
   render() {
     const { isLoading, selectedValue, isHidden } = this.state;
-    const { openedStreams, showChat } = this.props;
+    const { showChat } = this.props;
     localStorage.setItem('chatBoxState', JSON.stringify(this.state));
+
+    const streams = getStreamNames();
+    const chats = [];
+    for (let i = 0; i < streams.length; i += 1) {
+      if (streams[i][1] !== 'yt') {
+        chats.push(streams[i]);
+      }
+    }
 
     const options = [];
     const link = window.location.hash;
-    const streamNames = link.split('#');
-    if (selectedValue === '' || link.indexOf(selectedValue) === -1) {
-      this.setState({ isLoading: true, selectedValue: streamNames[1] });
+    if ((selectedValue === '' || !link.includes(selectedValue)) && chats[0]) {
+      this.setState({ isLoading: true, selectedValue: chats[0][0] });
+    } else if (selectedValue !== '' && !link.includes('(t)')) {
+      this.setState({ isLoading: true, selectedValue: '' });
     }
 
-    for (let i = 1; i <= openedStreams; i += 1) {
-      if (streamNames[i]) {
+    for (let i = 0; i <= chats.length; i += 1) {
+      if (chats[i]) {
         options.push(
-          <option key={streamNames[i]} value={streamNames[i]}>
-            {streamNames[i]}
+          <option key={chats[i][0]} value={chats[i][0]}>
+            {chats[i][0]}
           </option>
         );
       }
@@ -180,15 +189,18 @@ class ChatBox extends React.Component {
 
     return (
       <ChatBoxWrapper id="chatBox">
-        <select
-          ref={select => {
-            this.selectChat = select;
-          }}
-          onChange={this.setSelectedChat}
-        >
-          {options}
-        </select>
+        {chats[0] && (
+          <select
+            ref={select => {
+              this.selectChat = select;
+            }}
+            onChange={this.setSelectedChat}
+          >
+            {options}
+          </select>
+        )}
         <div
+          style={{ zIndex: 1 }}
           ref={div => {
             this.chatChangeWidth = div;
           }}
@@ -207,7 +219,6 @@ class ChatBox extends React.Component {
 }
 
 ChatBox.propTypes = {
-  openedStreams: PropTypes.number.isRequired,
   showChat: PropTypes.bool.isRequired
 };
 
