@@ -6,7 +6,7 @@ const ChatBoxWrapper = styled.div`
   right: 0;
   height: 100%;
   box-sizing: border-box;
-  background-color: #000000;
+  background-color: #060f1b;
   border-left: 1px solid #2350a9;
   overflow: hidden;
   display: none;
@@ -34,6 +34,12 @@ const ChatBoxWrapper = styled.div`
     width: 10px;
     left: -5px;
     cursor: e-resize;
+  }
+
+  iframe {
+    position: absolute;
+    top: 50px;
+    height: calc(100% - 50px);
   }
 `;
 

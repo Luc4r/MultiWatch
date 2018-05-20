@@ -12,16 +12,15 @@ class MoveAndResize extends React.Component {
     };
   }
   shouldComponentUpdate(nextProps) {
-    if (this.props.menuVisibility !== nextProps.menuVisibility) {
-      return true;
-    }
+    if (this.props.menuVisibility !== nextProps.menuVisibility) return true;
+    if (this.props.enteredName !== nextProps.enteredName) return true;
     return false;
   }
 
   checkboxClick = () => {
-    const moveCheckbox = document.getElementById(`move${this.props.channelName}`);
-    const sizeCheckbox = document.getElementById(`size${this.props.channelName}`);
-    const stream = document.getElementById(`stream${this.props.channelName}`);
+    const moveCheckbox = document.getElementById(`move${this.props.enteredName}`);
+    const sizeCheckbox = document.getElementById(`size${this.props.enteredName}`);
+    const stream = document.getElementById(`stream${this.props.enteredName}`);
     const { lastClick } = this.state;
     if (moveCheckbox.checked && (lastClick === 'size' || lastClick === 'none')) {
       setTimeout(() => {
@@ -48,11 +47,11 @@ class MoveAndResize extends React.Component {
   render() {
     return (
       <VideoMenuMoveAndResizeWrapper style={{ visibility: this.props.menuVisibility }}>
-        <label htmlFor={`move${this.props.channelName}`} className="labl">
+        <label htmlFor={`move${this.props.enteredName}`} className="labl">
           <input
             type="radio"
-            name={this.props.channelName}
-            id={`move${this.props.channelName}`}
+            name={this.props.enteredName}
+            id={`move${this.props.enteredName}`}
             onClick={this.checkboxClick}
           />
           <VidMenuButton style={{ marginRight: '2px' }}>
@@ -66,11 +65,11 @@ class MoveAndResize extends React.Component {
             </svg>
           </VidMenuButton>
         </label>
-        <label htmlFor={`size${this.props.channelName}`} className="labl">
+        <label htmlFor={`size${this.props.enteredName}`} className="labl">
           <input
             type="radio"
-            name={this.props.channelName}
-            id={`size${this.props.channelName}`}
+            name={this.props.enteredName}
+            id={`size${this.props.enteredName}`}
             onClick={this.checkboxClick}
           />
           <VidMenuButton style={{ marginRight: '2px' }}>
@@ -90,7 +89,7 @@ class MoveAndResize extends React.Component {
 
 MoveAndResize.propTypes = {
   menuVisibility: PropTypes.string.isRequired,
-  channelName: PropTypes.string.isRequired
+  enteredName: PropTypes.string.isRequired
 };
 
 export default MoveAndResize;

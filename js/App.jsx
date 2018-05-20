@@ -12,7 +12,7 @@ import { AppWrapper, RenderAppWrapper } from './styled/AppWrapper';
 const link = window.location.hash;
 const dividedStreamNames = link.split('#');
 let openedStreams = dividedStreamNames.length - 1;
-if (link === '') { 
+if (link === '') {
   openedStreams = 0;
 }
 const initialStoreState = {

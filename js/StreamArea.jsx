@@ -40,7 +40,6 @@ class StreamArea extends React.Component {
         </div>
         {openedStreams > 0 && (
           <ChatBox
-            openedStreams={openedStreams}
             chatChangedWidth={(newVideoWidth, doTransition) => {
               this.changeVideoWidth(newVideoWidth, doTransition);
             }}

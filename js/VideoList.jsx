@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Video from './Video';
+import getStreamNames from './universalFunctions/getStreamNames';
 
 class VideoList extends React.Component {
   componentWillMount() {
@@ -14,17 +15,20 @@ class VideoList extends React.Component {
   }
 
   render() {
-    const streams = [];
-    let streamNames = window.location.hash;
-    streamNames = streamNames.split('#');
+    const Videos = [];
+    const streams = getStreamNames();
 
-    streamNames
-      .filter(streamName => streamName)
-      .map((streamName, i) =>
-        streams.push(<Video key={streamName} channelName={streamName} zIndex={i + 1} />)
+    for (let i = 0; i < streams.length; i += 1) {
+      Videos.push(
+        <Video
+          key={`${streams[i][0]}(${streams[i][1]})`}
+          channelName={streams[i][0]}
+          platform={streams[i][1]}
+          zIndex={i + 1}
+        />
       );
-
-    return <div>{streams}</div>;
+    }
+    return <div>{Videos}</div>;
   }
 }
 

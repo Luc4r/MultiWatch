@@ -12,18 +12,18 @@ class VideoMenu extends React.Component {
       menuOpacity: 1,
       menuVisibility: 'visible'
     };
-    const cachedState = JSON.parse(localStorage.getItem(`${props.channelName}MenuState`));
+    const cachedState = JSON.parse(localStorage.getItem(`${props.enteredName}MenuState`));
     if (initialState !== cachedState && cachedState !== null) {
       initialState = cachedState;
     }
     this.state = initialState;
   }
   componentDidMount() {
-    const { channelName } = this.props;
-    if (this.props.pinnedStreamNames.indexOf(channelName) !== -1) {
-      document.getElementById(`stream${channelName}`).style.pointerEvents = 'auto';
-      document.getElementById(channelName).style.transitionDuration = '0.5s';
-      document.getElementById(channelName).style.zIndex = 0;
+    const { enteredName } = this.props;
+    if (this.props.pinnedStreamNames.includes(enteredName)) {
+      document.getElementById(`stream${enteredName}`).style.pointerEvents = 'auto';
+      document.getElementById(enteredName).style.transitionDuration = '0.5s';
+      document.getElementById(enteredName).style.zIndex = 0;
       this.changeVideoPosition();
       this.changeVideoLayout();
     }
@@ -31,6 +31,7 @@ class VideoMenu extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     if (this.props.parentState.isPinned !== nextProps.parentState.isPinned) return true;
     if (this.state.menuVisibility !== nextState.menuVisibility) return true;
+    if (this.props.channelName !== nextProps.channelName) return true;
     return false;
   }
 
@@ -64,7 +65,7 @@ class VideoMenu extends React.Component {
       }
     }
     if (this.props.parentState.isPinned === false) {
-      element = document.getElementById(this.props.channelName);
+      element = document.getElementById(this.props.enteredName);
       element.style.top = `10px`;
       element.style.left = `10px`;
     }
@@ -77,7 +78,7 @@ class VideoMenu extends React.Component {
     let height = '100%';
     // CHANGE SIZE - on unpin
     if (pinnedStreams === 0 || this.props.parentState.isPinned === false) {
-      this.changeElementSize(this.props.channelName, `320px`, `180px`);
+      this.changeElementSize(this.props.enteredName, `320px`, `180px`);
     }
     // CHANGE SIZE
     if (pinnedStreams === 1) {
@@ -116,7 +117,7 @@ class VideoMenu extends React.Component {
   };
 
   pinVideo = () => {
-    const { channelName } = this.props;
+    const { enteredName } = this.props;
     // SPECIAL ACTIONS
     if (this.props.pinnedStreams === 4) {
       this.props.addAlert(`You cannot pin more than 4 streams!`);
@@ -124,11 +125,11 @@ class VideoMenu extends React.Component {
     }
     // UPDATE VIDEO DATA
     this.props.setParentState({ isPinned: true });
-    document.getElementById(`stream${channelName}`).style.pointerEvents = 'auto';
-    document.getElementById(channelName).style.transitionDuration = '0.5s';
-    document.getElementById(channelName).style.zIndex = 0;
+    document.getElementById(`stream${enteredName}`).style.pointerEvents = 'auto';
+    document.getElementById(enteredName).style.transitionDuration = '0.5s';
+    document.getElementById(enteredName).style.zIndex = 0;
     // STORE CALL
-    this.props.pinIt(this.props.channelName);
+    this.props.pinIt(this.props.enteredName);
     // WAIT FOR UPDATE PROPS
     setTimeout(() => {
       this.changeVideoPosition();
@@ -136,12 +137,12 @@ class VideoMenu extends React.Component {
     });
   };
   unpinVideo = () => {
-    const { channelName, zIndex } = this.props;
+    const { enteredName, zIndex } = this.props;
     // UPDATE VIDEO DATA
     this.props.setParentState({ isPinned: false });
-    document.getElementById(channelName).style.zIndex = zIndex;
+    document.getElementById(enteredName).style.zIndex = zIndex;
     // STORE CALL
-    this.props.unpinIt(channelName);
+    this.props.unpinIt(enteredName);
     // WAIT FOR UPDATE PROPS
     setTimeout(() => {
       this.changeVideoPosition();
@@ -149,15 +150,15 @@ class VideoMenu extends React.Component {
     });
     // After unpin remove any interaction delay
     setTimeout(() => {
-      document.getElementById(channelName).style.transitionDuration = '0s';
+      document.getElementById(enteredName).style.transitionDuration = '0s';
     }, 500);
   };
 
   changeMenuVisibility = () => {
-    const { channelName, parentState } = this.props;
-    document.getElementById(`stream${channelName}`).style.pointerEvents = 'auto';
-    const moveCheckbox = document.getElementById(`move${channelName}`);
-    const sizeCheckbox = document.getElementById(`size${channelName}`);
+    const { enteredName, parentState } = this.props;
+    document.getElementById(`stream${enteredName}`).style.pointerEvents = 'auto';
+    const moveCheckbox = document.getElementById(`move${enteredName}`);
+    const sizeCheckbox = document.getElementById(`size${enteredName}`);
     if (this.state.menuOpacity === 1) {
       // HIDE
       if (parentState.isPinned === false) {
@@ -172,13 +173,13 @@ class VideoMenu extends React.Component {
   };
 
   closeIt = () => {
-    const { channelName, openedStreams, parentState } = this.props;
-    document.getElementById(channelName).style.pointerEvents = 'none';
+    const { enteredName, openedStreams, parentState } = this.props;
+    document.getElementById(enteredName).style.pointerEvents = 'none';
     if (parentState.isPinned === true) {
       this.unpinVideo();
     }
-    document.getElementById(channelName).style.transitionDuration = '0.5s';
-    document.getElementById(channelName).style.opacity = '0';
+    document.getElementById(enteredName).style.transitionDuration = '0.5s';
+    document.getElementById(enteredName).style.opacity = '0';
     // CLOSE CHAT WHEN NO STREAMS OPENED
     if (openedStreams === 1) {
       const chatElement = document.getElementById('chatBox');
@@ -191,36 +192,36 @@ class VideoMenu extends React.Component {
     }
     this.timeout = setTimeout(() => {
       // 0.5s === transition duration
-      const newURL = window.location.hash.replace(`#${channelName}`, '');
+      const newURL = window.location.hash.replace(`#${enteredName}`, '');
       if (newURL) {
         window.history.pushState('', '', newURL);
       } else {
         window.history.pushState('', '', window.location.pathname);
       }
-      this.props.closeStream(channelName);
+      this.props.closeStream();
       // STORAGE CLEAR DATA
-      localStorage.removeItem(`${channelName}State`);
-      localStorage.removeItem(`${channelName}MenuState`);
+      localStorage.removeItem(`${enteredName}State`);
+      localStorage.removeItem(`${enteredName}MenuState`);
     }, 500);
   };
 
   render() {
     const { menuOpacity, menuVisibility } = this.state;
-    const { channelName, parentState } = this.props;
+    const { channelName, enteredName, parentState } = this.props;
 
-    let spanStyle;
+    let spanStyle = { width: 'calc(100% - 168px)' };
     let pinOrUnpinFunction = this.pinVideo;
     if (parentState.isPinned === true) {
-      spanStyle = { width: 'calc(100% - 64px)' };
+      spanStyle = { width: 'calc(100% - 84px)' };
       pinOrUnpinFunction = this.unpinVideo;
     }
-    localStorage.setItem(`${channelName}MenuState`, JSON.stringify(this.state));
+    localStorage.setItem(`${enteredName}MenuState`, JSON.stringify(this.state));
 
     return (
       <VideoMenuWrapper style={{ opacity: menuOpacity, zIndex: 150 }}>
         <div id="barBackground">
           {parentState.isPinned === false && (
-            <MoveAndResize menuVisibility={menuVisibility} channelName={channelName} />
+            <MoveAndResize menuVisibility={menuVisibility} enteredName={enteredName} />
           )}
           <span
             style={spanStyle}
@@ -268,6 +269,7 @@ VideoMenu.propTypes = {
     isPinned: PropTypes.bool
   }).isRequired,
   channelName: PropTypes.string.isRequired,
+  enteredName: PropTypes.string.isRequired,
   zIndex: PropTypes.number.isRequired,
   setParentState: PropTypes.func.isRequired,
 
@@ -283,8 +285,8 @@ VideoMenu.propTypes = {
 
 function mapDispatchToProps(dispatch) {
   return {
-    closeStream: channelName => {
-      dispatch({ type: 'STREAM - CLOSE', name: channelName });
+    closeStream: () => {
+      dispatch({ type: 'STREAM - CLOSE' });
     },
     addAlert: alert => {
       dispatch({ type: 'ALERT - ADD', message: alert });

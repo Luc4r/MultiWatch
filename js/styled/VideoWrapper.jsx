@@ -6,6 +6,7 @@ const VideoWrapper = styled.div`
   background: #000000;
   border: 1px solid #121212;
   box-sizing: border-box;
+  opacity: 0;
   transition-duration: 0.7s;
 
   iframe {
