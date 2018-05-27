@@ -1,32 +1,27 @@
 const removeString = (mainString, stringToRemove, separator, replaceWith) => {
-  const dividedString = mainString.split(separator);
-  let newString = '';
-  for (let i = 1; i < dividedString.length; i += 1) {
-    if (dividedString[i] === stringToRemove) {
-      newString += replaceWith;
-    } else {
-      newString += `${separator}${dividedString[i]}`;
-    }
-  }
+  const newString = mainString.split(separator).reduce((previous, string) => {
+    if (string === stringToRemove) return `${previous}${replaceWith}`;
+    return `${separator}${string}`;
+  });
   return newString;
 };
 
 const addAlert = (state, action) => {
-  if (state.alertMessages.indexOf(action.message) !== -1) {
+  if (state.alertMessages.includes(action.message)) {
     const alertElement = document.getElementById(action.message);
     const alertNumberElement = document.getElementById(`number${action.message}`);
     // Change alert background color
     const bgColor = alertElement.style.backgroundColor;
-    const red = parseInt(bgColor.slice(bgColor.indexOf('(') + 1, bgColor.indexOf(',')), 10) + 20;
-    if (red < 220) {
-      const newBgColor = `rgba(${red},${bgColor.slice(bgColor.indexOf(',') + 1, bgColor.length)}`;
-      alertElement.style.backgroundColor = newBgColor;
+    const newRed = parseInt(bgColor.slice(bgColor.indexOf('(') + 1, bgColor.indexOf(',')), 10) + 20;
+    if (newRed < 220) {
+      const newBg = `rgba(${newRed},${bgColor.slice(bgColor.indexOf(',') + 1, bgColor.length)}`;
+      alertElement.style.backgroundColor = newBg;
     }
     // Change number of how many times has this alert been triggered
     const alertNumber = parseInt(alertNumberElement.innerHTML, 10);
     if (alertNumber < 99) {
       alertNumberElement.innerHTML = alertNumber + 1;
-      if (alertNumberElement.style.opacity !== '1') {
+      if (!alertNumberElement.style.opacity) {
         alertNumberElement.style.opacity = '1';
       }
     }
@@ -40,13 +35,9 @@ const addAlert = (state, action) => {
 
 const mainReducer = (state, action) => {
   let newState;
-  let newBoolValue = false;
   switch (action.type) {
-    case 'TOPBAR - SHOW':
-      newState = Object.assign({}, state, { isTopBarHidden: false });
-      break;
-    case 'TOPBAR - HIDE':
-      newState = Object.assign({}, state, { isTopBarHidden: true });
+    case 'TOPBAR - TOGGLE':
+      newState = Object.assign({}, state, { isTopBarHidden: !state.isTopBarHidden });
       break;
     case 'ALERT - ADD':
       newState = addAlert(state, action);
@@ -70,9 +61,6 @@ const mainReducer = (state, action) => {
       });
       break;
     }
-    case 'STREAM - CHANGE':
-      newState = Object.assign({}, state, { streamNames: action.newStreamNames });
-      break;
     case 'STREAM - PIN':
       newState = Object.assign({}, state, {
         pinnedStreams: state.pinnedStreams + 1,
@@ -87,11 +75,11 @@ const mainReducer = (state, action) => {
       });
       break;
     }
+    case 'STREAM - CHANGE LAYOUT':
+      newState = Object.assign({}, state, { videoLayout: action.newLayout });
+      break;
     case 'CHAT - TOGGLE':
-      if (state.showChat === false) {
-        newBoolValue = true;
-      }
-      newState = Object.assign({}, state, { showChat: newBoolValue });
+      newState = Object.assign({}, state, { showChat: !state.showChat });
       break;
     case 'STORE - CHANGE STATE':
       newState = Object.assign({}, state, action.state);

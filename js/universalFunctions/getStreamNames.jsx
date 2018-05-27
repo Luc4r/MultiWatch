@@ -1,18 +1,13 @@
 function getStreamNames() {
-  const streams = [];
-
-  window.location.hash
-    .split('#')
-    .filter(streamName => streamName)
-    .map(streamName => {
-      const location = streamName.indexOf('(');
-      const stream = streamName.substr(0, location);
-      const platform = streamName.substring(location + 1, streamName.length - 1);
-      streams.push([stream, platform]);
-      return 0; // needed?
-    });
-
-  return streams;
+  return window.location.hash.split('#').reduce((filtered, stream) => {
+    if (stream) {
+      const location = stream.indexOf('(');
+      const name = stream.substr(0, location);
+      const platform = stream.substring(location + 1, stream.length - 1);
+      filtered.push([name, platform]);
+    }
+    return filtered;
+  }, []);
 }
 
 export default getStreamNames;

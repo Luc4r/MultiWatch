@@ -3,16 +3,13 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import Alert from './Alert';
-import AlertBoxWrapper from './styled/AlertBoxWrapper';
+import { AlertBoxWrapper } from './styled/AlertBox';
 
 const AlertBox = props => {
-  const alerts = [];
-  const dividedAlerts = props.alertMessages.split(';');
-  for (let i = 1; i < dividedAlerts.length; i += 1) {
-    if (dividedAlerts[i] !== '') {
-      alerts.push(<Alert key={dividedAlerts[i]} alertIndex={i} alertMessage={dividedAlerts[i]} />);
-    }
-  }
+  const alerts = props.alertMessages.split(';').reduce((filtered, alert, i) => {
+    if (alert) filtered.push(<Alert key={alert} alertIndex={i} alertMessage={alert} />);
+    return filtered;
+  }, []);
 
   return <AlertBoxWrapper>{alerts}</AlertBoxWrapper>;
 };
@@ -21,10 +18,8 @@ AlertBox.propTypes = {
   alertMessages: PropTypes.string.isRequired
 };
 
-function mapStateToProps(state) {
-  return {
-    alertMessages: state.alertMessages
-  };
+function mapStateToProps({ alertMessages }) {
+  return { alertMessages };
 }
 
 export default connect(mapStateToProps)(AlertBox);

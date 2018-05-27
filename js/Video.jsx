@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { ResizeSensor } from 'css-element-queries';
 
-import VideoWrapper from './styled/VideoWrapper';
+import VideoWrapper from './styled/Video';
 import VideoMenu from './VideoMenu';
 import Loading from './Loading';
 import { getWindowWidth, getWindowHeight } from './universalFunctions/windowProperties';
-import { getX, getY } from './universalFunctions/getXY';
+import getCoordinate from './universalFunctions/getCoordinate';
 import { iframeEventsDisable, iframeEventsEnable } from './universalFunctions/iframeEvents';
 
 class Video extends React.Component {
@@ -25,38 +25,52 @@ class Video extends React.Component {
       lastMarginRight: getWindowWidth(),
       lastWindowHeight: getWindowHeight()
     };
-    const cachedState = JSON.parse(
-      localStorage.getItem(`${this.props.channelName}(${this.props.platform})State`)
-    );
-    if (initialState !== cachedState && cachedState !== null) {
+    const enteredName = `${this.props.channelName}(${this.props.platform})`;
+    const cachedState = JSON.parse(localStorage.getItem(`${enteredName}State`));
+    if (initialState !== cachedState && cachedState) {
       initialState = Object.assign({}, cachedState, { isLoading: true });
     }
     this.state = initialState;
-    this.videoElement = null;
+    let initialProperties = { left: 10, top: 10, width: 320, height: 180 };
+    const cachedProperties = JSON.parse(localStorage.getItem(`${enteredName}Properties`));
+    if (initialProperties !== cachedProperties && cachedProperties && !initialState.isPinned) {
+      if (
+        cachedProperties.left + cachedProperties.width < getWindowWidth() &&
+        cachedProperties.top + cachedProperties.height < getWindowHeight()
+      )
+        initialProperties = cachedProperties;
+    } else if (!cachedProperties) {
+      localStorage.setItem(`${enteredName}Properties`, JSON.stringify(initialProperties));
+    }
+    this.properties = initialProperties;
   }
   componentWillMount() {
     if (this.props.platform === 'yt') {
-      // get channelID for finding a livestream
+      // get channelID - needed to find the livestream
       const API = 'https://www.googleapis.com/youtube/v3/channels?part=snippet&forUsername=';
       const APID = 'https://www.googleapis.com/youtube/v3/channels?part=snippet&id=';
       const KEY = '&key=AIzaSyAckbMFR-zOKefEnGSWGbiESpHl81VNOYc';
       const searchChannel = this.state.channelID;
-
       fetch(API + searchChannel + KEY)
         .then(response => response.json())
         .then(data => {
           if (data.pageInfo.totalResults !== 0) {
             // user entered channel name
-            this.setState({
-              channelID: data.items[0].id,
-              channelName: data.items[0].snippet.customUrl
-            });
+            if (data.items[0].snippet.customUrl)
+              this.setState({
+                channelID: data.items[0].id,
+                channelName: data.items[0].snippet.customUrl
+              });
+            else
+              this.setState({
+                channelID: data.items[0].id
+              });
           } else {
             // user might enter channel ID
             fetch(APID + searchChannel + KEY)
               .then(response => response.json())
               .then(data2 => {
-                if (data2.pageInfo.totalResults !== 0) {
+                if (data2.pageInfo.totalResults !== 0 && data2.items[0].snippet.customUrl) {
                   // user entered channel ID
                   this.setState({
                     channelID: data2.items[0].id,
@@ -81,18 +95,18 @@ class Video extends React.Component {
     videoElement.addEventListener('touchstart', this.onDown);
     document.body.addEventListener('touchmove', this.onMove);
     document.body.addEventListener('touchend', this.onLeave);
-
     localStorage.setItem('openedStreams', window.location.hash);
     setTimeout(() => {
       videoElement.style.opacity = '1';
     });
-    if (this.state.isPinned === false)
-      // On reloading pages with pinned videos dont do anything
+    if (!this.state.isPinned)
       setTimeout(() => {
-        document.getElementById(enteredName).style.transitionDuration = '0s';
+        videoElement.style.transitionDuration = '0s';
       }, 500);
   }
   shouldComponentUpdate(nextProps) {
+    // Any better solution than this? - if user close any stream rebind all
+    // resize sensors from others to the videoArea
     if (
       this.props.openedStreams > nextProps.openedStreams &&
       window.location.hash.includes(`${this.props.channelName}(${this.props.platform})`)
@@ -122,37 +136,14 @@ class Video extends React.Component {
   }
 
   onDown = e => {
-    if (this.state.isPinned === false) {
+    if (!this.state.isPinned) {
       const enteredName = `${this.props.channelName}(${this.props.platform})`;
-      const x = getX(e);
-      const y = getY(e);
+      const x = getCoordinate(e, 'X');
+      const y = getCoordinate(e, 'Y');
       this.setState({ lastX: x, lastY: y, onRectangle: true });
-      // Disable all video/chat events
       iframeEventsDisable();
       if (document.getElementById(`size${enteredName}`).checked) {
-        const video = document.getElementById(enteredName);
-        const additionalHeight = this.getAdditionalHeight();
-        const left = parseInt(video.style.left, 10);
-        const top = parseInt(video.style.top, 10);
-        const width = parseInt(video.style.width, 10);
-        const height = parseInt(video.style.height, 10);
-        const OY = (width + window.scrollX) / 2 + left;
-        const OX = (height + window.scrollY) / 2 + top + additionalHeight;
-        // Check quadrant
-        let clickQuadrant = 0;
-        if (x > OY) {
-          if (y < OX) {
-            clickQuadrant = 1;
-          } else {
-            clickQuadrant = 4;
-          }
-        } else if (x < OY) {
-          if (y < OX) {
-            clickQuadrant = 2;
-          } else {
-            clickQuadrant = 3;
-          }
-        }
+        const clickQuadrant = this.checkQuadrant(x, y);
         this.setState({ quadrant: clickQuadrant });
       }
     }
@@ -160,201 +151,187 @@ class Video extends React.Component {
 
   onMove = e => {
     if (!this.state.isPinned) {
-      const enteredName = `${this.props.channelName}(${this.props.platform})`;
-      const video = document.getElementById(enteredName);
-      const left = parseInt(video.style.left, 10);
-      const top = parseInt(video.style.top, 10);
-      const width = parseInt(video.style.width, 10);
-      const height = parseInt(video.style.height, 10);
       const { onRectangle } = this.state;
-      const move = document.getElementById(`move${enteredName}`).checked;
-      const size = document.getElementById(`size${enteredName}`).checked;
-
-      if (onRectangle === true) {
-        const windowHeight = getWindowHeight();
-        const marginRight = this.getVideoAreaWidth();
-        const additionalHeight = this.getAdditionalHeight();
-        // X VARIABLES
-        const { lastX } = this.state;
-        const x = getX(e);
-        const mouseMoveX = lastX - x;
-        const rectangleLeft = left + window.scrollX;
-        // Y VARIABLES
-        const { lastY } = this.state;
-        const y = getY(e);
-        const mouseMoveY = lastY - y;
-        const rectangleTop = top + window.scrollY;
-        // CHANGE SIZE
-        if (size === true) {
-          // QUADRANTS
-          const { newWidth, newHeight, newLeft, newTop } = this.getVideoProperties(
+      if (onRectangle) {
+        const enteredName = `${this.props.channelName}(${this.props.platform})`;
+        const videoElement = document.getElementById(enteredName);
+        const move = document.getElementById(`move${enteredName}`).checked;
+        const size = document.getElementById(`size${enteredName}`).checked;
+        const { left, top, width, height } = this.getVideoProperties();
+        const x = getCoordinate(e, 'X');
+        const y = getCoordinate(e, 'Y');
+        const mouseMoveX = this.state.lastX - x;
+        const mouseMoveY = this.state.lastY - y;
+        if (size) {
+          // New properties - depends on quadrant
+          const { newWidth, newHeight, newLeft, newTop } = this.getNewVideoProperties(
             mouseMoveX,
-            rectangleLeft,
-            width,
-            rectangleTop,
-            height
+            videoElement
           );
-          // MARGINS
-          if (this.isThereAMargin(newTop, newLeft, newWidth, newHeight) === true) {
+          if (this.isThereAMargin(newTop, newLeft, newWidth, newHeight)) {
             return;
           }
-          // MIN/MAX WIDTH (height depends on width - 16:9 ratio)
           if (newWidth >= 320 && newWidth <= 614) {
-            video.style.width = `${newWidth}px`;
-            video.style.height = `${newHeight}px`;
-            video.style.left = `${newLeft}px`;
-            video.style.top = `${newTop}px`;
-            this.setState({ lastX: x, lastY: y });
+            videoElement.style.width = `${newWidth}px`;
+            videoElement.style.height = `${newHeight}px`;
+            videoElement.style.left = `${newLeft}px`;
+            videoElement.style.top = `${newTop}px`;
           }
-        }
-        // MOVE ELEMENT
-        if (move === true) {
-          const newLeft = rectangleLeft - mouseMoveX;
-          const newTop = rectangleTop - mouseMoveY;
+        } else if (move) {
+          const marginRight = this.getVideoAreaWidth() - 5;
+          const newLeft = left - mouseMoveX;
+          const newRight = left + width - mouseMoveX;
           // Horizontal MOVE
-          if (newLeft > 5 && rectangleLeft + width - mouseMoveX < marginRight - 5) {
-            video.style.left = `${newLeft}px`;
+          if (newLeft > 5 && newRight < marginRight) {
+            videoElement.style.left = `${newLeft}px`;
           }
           // Vertical MOVE
-          if (
-            newTop > 5 &&
-            rectangleTop + height - mouseMoveY < windowHeight - 5 - additionalHeight
-          ) {
-            video.style.top = `${newTop}px`;
+          const marginBottom = getWindowHeight() - this.getAdditionalHeight() - 5;
+          const newTop = top - mouseMoveY;
+          const newBottom = top + height - mouseMoveY;
+          if (newTop > 5 && newBottom < marginBottom) {
+            videoElement.style.top = `${newTop}px`;
           }
-          this.setState({ lastX: x, lastY: y });
         }
+        localStorage.setItem(`${enteredName}Properties`, JSON.stringify(this.getVideoProperties()));
+        this.setState({ lastX: x, lastY: y });
       }
     }
   };
 
   onLeave = () => {
-    if (this.state.onRectangle === true) {
+    if (this.state.onRectangle) {
       iframeEventsEnable();
       this.setState({ onRectangle: false });
     }
   };
 
-  getVideoProperties = (mouseMoveX, rectangleLeft, width, rectangleTop, height) => {
+  getVideoProperties = () => {
+    const enteredName = `${this.props.channelName}(${this.props.platform})`;
+    const videoElement = document.getElementById(enteredName);
+    const left = parseInt(videoElement.style.left, 10);
+    const top = parseInt(videoElement.style.top, 10);
+    const width = parseInt(videoElement.style.width, 10);
+    const height = parseInt(videoElement.style.height, 10);
+    return { left, top, width, height };
+  };
+
+  getNewVideoProperties = mouseMoveX => {
+    const { left, top, width, height } = this.getVideoProperties();
     let newWidth = width - mouseMoveX;
     let newHeight = Math.round(newWidth * 9 / 16);
     const widthDifference = Math.abs(newWidth - width);
     let heightDifference = Math.abs(newHeight - height);
-    let newLeft = rectangleLeft;
-    let newTop = rectangleTop - heightDifference;
+    let newLeft = left;
+    let newTop = top - heightDifference;
     // Second, third, fourth quadrant variables
     switch (this.state.quadrant) {
       case 2:
         newWidth = width + mouseMoveX;
-        newLeft = rectangleLeft - widthDifference;
         newHeight = Math.floor(newWidth * 9 / 16); // Math.floor fixes "1px movement"
+        newLeft = left - widthDifference;
         heightDifference = Math.abs(newHeight - height);
-        newTop = rectangleTop - heightDifference;
+        newTop = top - heightDifference;
         if (mouseMoveX <= 0) {
-          newTop = rectangleTop + heightDifference;
-          newLeft = rectangleLeft + widthDifference;
+          newTop = top + heightDifference;
+          newLeft = left + widthDifference;
         }
         break;
       case 3:
         newWidth = width + mouseMoveX;
         newHeight = Math.ceil(newWidth * 9 / 16);
-        newLeft = rectangleLeft - widthDifference;
-        newTop = rectangleTop;
+        newLeft = left - widthDifference;
+        newTop = top;
         if (mouseMoveX <= 0) {
-          newLeft = rectangleLeft + widthDifference;
+          newLeft = left + widthDifference;
         }
         break;
       case 4:
-        newTop = rectangleTop;
+        newTop = top;
         break;
       default:
         if (mouseMoveX >= 0) {
-          newTop = rectangleTop + heightDifference;
+          newTop = top + heightDifference;
         }
     }
     return { newWidth, newHeight, newLeft, newTop };
   };
 
   getAdditionalHeight = () => {
-    if (this.props.isTopBarHidden === true) {
-      return 0;
-    }
+    if (this.props.isTopBarHidden) return 0;
     return 50;
   };
 
   getVideoAreaWidth = () => {
     const marginRight = document.getElementById('videoArea').style.width;
-    if (marginRight === '100%') {
+    if (marginRight === '100%' || !marginRight) {
       return getWindowWidth();
     }
     return parseInt(marginRight, 10);
   };
 
+  checkQuadrant = (x, y) => {
+    const { left, top, width, height } = this.getVideoProperties();
+    const additionalHeight = this.getAdditionalHeight();
+    const OY = (width + window.scrollX) / 2 + left;
+    const OX = (height + window.scrollY) / 2 + top + additionalHeight;
+    let clickQuadrant = 0;
+    if (x >= OY) {
+      if (y < OX) clickQuadrant = 1;
+      else clickQuadrant = 4;
+    } else if (x < OY) {
+      if (y < OX) clickQuadrant = 2;
+      else clickQuadrant = 3;
+    }
+    return clickQuadrant;
+  };
+
   isThereAMargin = (newTop, newLeft, newWidth, newHeight) => {
     const { quadrant } = this.state;
-    const marginRight = this.getVideoAreaWidth();
-    const marginTop = getWindowHeight() - this.getAdditionalHeight();
+    const marginRight = this.getVideoAreaWidth() - 5;
+    const marginTop = getWindowHeight() - this.getAdditionalHeight() - 5;
     // Left and right margin
-    if ((quadrant === 1 || quadrant === 4) && newLeft + newWidth + 5 > marginRight) {
-      return true;
-    }
-    if ((quadrant === 2 || quadrant === 3) && newLeft < 5) {
-      return true;
-    }
+    if ((quadrant === 1 || quadrant === 4) && newLeft + newWidth > marginRight) return true;
+    if ((quadrant === 2 || quadrant === 3) && newLeft < 5) return true;
     // Top and bottom margin
-    if ((quadrant === 1 || quadrant === 2) && newTop < 5) {
-      return true;
-    }
-    if ((quadrant === 3 || quadrant === 4) && newTop + newHeight + 5 > marginTop) {
-      return true;
-    }
+    if ((quadrant === 1 || quadrant === 2) && newTop < 5) return true;
+    if ((quadrant === 3 || quadrant === 4) && newTop + newHeight > marginTop) return true;
     return false;
   };
 
   updateRectanglePositionOnWindowResize = () => {
-    if (this.state.isPinned === false) {
-      const video = document.getElementById(`${this.props.channelName}(${this.props.platform})`);
+    if (!this.state.isPinned) {
       const { lastMarginRight, lastWindowHeight } = this.state;
+      const enteredName = `${this.props.channelName}(${this.props.platform})`;
+      const videoElement = document.getElementById(enteredName);
+      const { left, top, width, height } = this.getVideoProperties();
       const marginRight = this.getVideoAreaWidth();
       const windowHeight = getWindowHeight();
       const additionalHeight = this.getAdditionalHeight();
-      const left = parseInt(video.style.left, 10);
-      const top = parseInt(video.style.top, 10);
-      const width = parseInt(video.style.width, 10);
-      const height = parseInt(video.style.height, 10);
       const widthChange = lastMarginRight - marginRight;
       // HORIZONTAL rectangle reposition
       if (width + left + 20 > lastMarginRight) {
         let newLeft = marginRight - width - 5;
-        if (this.props.showChat === true) {
-          newLeft = marginRight - width - 5;
-        }
+        if (this.props.showChat) newLeft = marginRight - width - 5;
         if (newLeft >= 10) {
-          video.style.left = `${newLeft}px`;
+          videoElement.style.left = `${newLeft}px`;
         } else {
           // if video is too big to stay into the area - change its size
           let newVideoWidth = width - widthChange;
-          if (newVideoWidth < 320) {
-            newVideoWidth = 320;
-          }
-          const newVideoHeight = newVideoWidth * 9 / 16;
-          video.style.left = `10px`;
-          video.style.width = `${newVideoWidth}px`;
-          video.style.height = `${newVideoHeight}px`;
+          if (newVideoWidth < 320) newVideoWidth = 320;
+          const newVideoHeight = Math.round(newVideoWidth * 9 / 16);
+          videoElement.style.left = `10px`;
+          videoElement.style.width = `${newVideoWidth}px`;
+          videoElement.style.height = `${newVideoHeight}px`;
         }
       }
       // VERTICAL rectangle reposition
-      if (
-        windowHeight > 300 &&
-        (top + height + 10 + additionalHeight > lastWindowHeight ||
-          top + height + 10 + additionalHeight > windowHeight)
-      ) {
-        video.style.top = `${windowHeight - height - 5 - additionalHeight}px`;
+      const rectangleBottom = top + height + additionalHeight + 10;
+      if (windowHeight > 300 && rectangleBottom > lastWindowHeight) {
+        videoElement.style.top = `${windowHeight - height - 5 - additionalHeight}px`;
       }
+      localStorage.setItem(`${enteredName}Properties`, JSON.stringify(this.getVideoProperties()));
       this.setState({ lastWindowHeight: windowHeight, lastMarginRight: marginRight });
-      setTimeout(() => {
-        video.style.transitionDuration = '0s';
-      }, 400);
     }
   };
 
@@ -366,21 +343,16 @@ class Video extends React.Component {
     let link = `https://player.twitch.tv/?&channel=${channelID}`;
     if (platform === 'yt') {
       link = `https://www.youtube.com/embed/live_stream?channel=${channelID}&autoplay=1`;
+    } else if (platform === 'm') {
+      link = `https://mixer.com/embed/player/${channelID}`;
+    } else if (platform === 'sc') {
+      link = `https://www.smashcast.tv/embed/${channelID}`;
     }
+    const { left, top, width, height } = this.properties;
 
     return (
-      <VideoWrapper
-        id={enteredName}
-        className="video"
-        style={{
-          top: 10,
-          left: 10,
-          width: 320,
-          height: 180,
-          zIndex
-        }}
-      >
-        {isLoading === true && <Loading />}
+      <VideoWrapper id={enteredName} className="video" style={{ top, left, height, width, zIndex }}>
+        {isLoading && <Loading />}
         <VideoMenu
           parentState={this.state}
           channelName={channelName}
@@ -391,9 +363,6 @@ class Video extends React.Component {
         <iframe
           title={`stream${enteredName}`}
           id={`stream${enteredName}`}
-          ref={i => {
-            this.iframe = i;
-          }}
           src={link}
           height="100%"
           width="100%"
@@ -410,17 +379,14 @@ Video.propTypes = {
   channelName: PropTypes.string.isRequired,
   platform: PropTypes.string.isRequired,
   zIndex: PropTypes.number.isRequired,
+
+  openedStreams: PropTypes.number.isRequired,
   isTopBarHidden: PropTypes.bool.isRequired,
-  showChat: PropTypes.bool.isRequired,
-  openedStreams: PropTypes.number.isRequired
+  showChat: PropTypes.bool.isRequired
 };
 
-function mapStateToProps(state) {
-  return {
-    isTopBarHidden: state.isTopBarHidden,
-    showChat: state.showChat,
-    openedStreams: state.openedStreams
-  };
+function mapStateToProps({ openedStreams, isTopBarHidden, showChat }) {
+  return { openedStreams, isTopBarHidden, showChat };
 }
 
 export default connect(mapStateToProps)(Video);
