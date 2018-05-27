@@ -25219,7 +25219,7 @@ var OptionsMenu = function OptionsMenu(props) {
             type: 'checkbox',
             className: 'switch',
             id: 'toggleChat',
-            checked: props.showChat,
+            defaultChecked: props.showChat,
             onClick: toggleChat
           })
         )
@@ -25360,10 +25360,10 @@ var SearchSection = function (_React$Component) {
         _this.props.addAlert(errorMessage);
         return;
       }
-      _this.props.openIt(enteredString);
       document.getElementById('searchChannel').value = '';
       var URL = window.location.hash;
       window.history.pushState('', '', URL + '#' + enteredString + '(' + platform + ')');
+      _this.props.openIt();
     }, _this.specialInputEvents = function (e) {
       if (e.keyCode === 13) {
         _this.addStream();
@@ -25451,8 +25451,8 @@ function mapStateToProps(_ref) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    openIt: function openIt(name) {
-      dispatch({ type: 'STREAM - OPEN', name: name });
+    openIt: function openIt() {
+      dispatch({ type: 'STREAM - OPEN' });
     },
     addAlert: function addAlert(message) {
       dispatch({ type: 'ALERT - ADD', message: message });
@@ -25754,7 +25754,7 @@ var ChatBox = function (_React$Component) {
           ref: function ref(select) {
             _this2.selectChat = select;
           },
-          value: selectedValue
+          defaultValue: selectedValue
         },
         options
       ),
