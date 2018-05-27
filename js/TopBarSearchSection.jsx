@@ -61,10 +61,10 @@ class SearchSection extends React.Component {
       this.props.addAlert(errorMessage);
       return;
     }
-    this.props.openIt(enteredString);
     document.getElementById('searchChannel').value = '';
     const URL = window.location.hash;
     window.history.pushState('', '', `${URL}#${enteredString}(${platform})`);
+    this.props.openIt();
   };
 
   specialInputEvents = e => {
@@ -111,8 +111,8 @@ function mapStateToProps({ openedStreams }) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    openIt: name => {
-      dispatch({ type: 'STREAM - OPEN', name });
+    openIt: () => {
+      dispatch({ type: 'STREAM - OPEN' });
     },
     addAlert: message => {
       dispatch({ type: 'ALERT - ADD', message });

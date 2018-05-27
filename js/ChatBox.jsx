@@ -184,19 +184,15 @@ class ChatBox extends React.Component {
       <ChatBoxWrapper id="chatBox">
         {chats[0] && (
           <select
-            ref={select => {
-              this.selectChat = select;
-            }}
-            value={selectedValue}
+            ref={select => { this.selectChat = select; }}
+            defaultValue={selectedValue}
           >
             {options}
           </select>
         )}
         <div
           style={{ zIndex: 1 }}
-          ref={div => {
-            this.chatChangeWidth = div;
-          }}
+          ref={div => { this.chatChangeWidth = div; }}
         />
         {isLoading && showChat && <Loading />}
         {showChat &&

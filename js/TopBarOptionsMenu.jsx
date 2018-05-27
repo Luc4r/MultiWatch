@@ -30,7 +30,7 @@ const OptionsMenu = props => {
               type="checkbox"
               className="switch"
               id="toggleChat"
-              checked={props.showChat}
+              defaultChecked={props.showChat}
               onClick={toggleChat}
             />
           </label>
