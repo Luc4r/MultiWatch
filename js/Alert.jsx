@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import AlertWrapper from './styled/AlertWrapper';
+import { AlertWrapper } from './styled/AlertBox';
 
 class Alert extends React.Component {
   constructor() {
@@ -70,10 +70,8 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-function mapStateToProps(state) {
-  return {
-    isTopBarHidden: state.isTopBarHidden
-  };
+function mapStateToProps({ isTopBarHidden }) {
+  return { isTopBarHidden };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Alert);

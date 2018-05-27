@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import Chat from './Chat';
-import ChatBoxWrapper from './styled/ChatBoxWrapper';
+import { ChatBoxWrapper } from './styled/ChatBox';
 import Loading from './Loading';
 import { getWindowWidth } from './universalFunctions/windowProperties';
-import { getX } from './universalFunctions/getXY';
+import getCoordinate from './universalFunctions/getCoordinate';
 import { iframeEventsDisable, iframeEventsEnable } from './universalFunctions/iframeEvents';
 import getStreamNames from './universalFunctions/getStreamNames';
 
@@ -21,67 +21,64 @@ class ChatBox extends React.Component {
       lastX: 0,
       isHidden: false
     };
-    this.lastPointerEvents = [];
     const cachedState = JSON.parse(localStorage.getItem('chatBoxState'));
-    if (initialState !== cachedState && cachedState !== null) {
+    if (initialState !== cachedState && cachedState) {
       initialState = Object.assign({}, cachedState, { isLoading: true });
     }
     this.state = initialState;
   }
   componentDidMount() {
-    if (this.props.showChat === true) {
-      this.showChat();
-    }
+    if (this.props.showChat) this.showChat();
     window.addEventListener('resize', this.updateChatAndVideoSize);
+    this.selectChat.addEventListener('change', this.setSelectedChat);
     // DESKTOP:
-    this.chatChangeWidth.addEventListener('mousedown', this.onClick);
+    this.chatChangeWidth.addEventListener('mousedown', this.onDown);
     document.body.addEventListener('mousemove', this.changeWidth);
-    document.body.addEventListener('mouseup', this.clickEnded);
-    document.body.addEventListener('mouseleave', this.clickEnded);
+    document.body.addEventListener('mouseup', this.onLeave);
+    document.body.addEventListener('mouseleave', this.onLeave);
     // MOBILE:
-    this.chatChangeWidth.addEventListener('touchstart', this.onClick);
+    this.chatChangeWidth.addEventListener('touchstart', this.onDown);
     document.body.addEventListener('touchmove', this.changeWidth);
-    document.body.addEventListener('touchend', this.clickEnded);
+    document.body.addEventListener('touchend', this.onLeave);
   }
   shouldComponentUpdate(nextProps) {
-    if (nextProps.showChat === true && this.props.showChat === false) {
-      this.showChat();
-    } else if (nextProps.showChat === false && this.props.showChat === true) {
-      this.hideChat();
-    }
+    const { showChat } = this.props;
+    if (nextProps.showChat && !showChat) this.showChat();
+    else if (!nextProps.showChat && showChat) this.hideChat();
     return true;
   }
   componentWillUnmount() {
     window.removeEventListener('resize', this.updateChatAndVideoSize);
+    this.selectChat.removeEventListener('change', this.setSelectedChat);
     // DESKTOP:
-    this.chatChangeWidth.removeEventListener('mousedown', this.onClick);
+    this.chatChangeWidth.removeEventListener('mousedown', this.onDown);
     document.body.removeEventListener('mousemove', this.changeWidth);
-    document.body.removeEventListener('mouseup', this.clickEnded);
-    document.body.removeEventListener('mouseleave', this.clickEnded);
+    document.body.removeEventListener('mouseup', this.onLeave);
+    document.body.removeEventListener('mouseleave', this.onLeave);
     // MOBILE:
-    this.chatChangeWidth.removeEventListener('touchstart', this.onClick);
+    this.chatChangeWidth.removeEventListener('touchstart', this.onDown);
     document.body.removeEventListener('touchmove', this.changeWidth);
-    document.body.removeEventListener('touchend', this.clickEnded);
+    document.body.removeEventListener('touchend', this.onLeave);
   }
 
-  onClick = e => {
-    if (this.state.changeIt === false) {
+  onDown = e => {
+    if (!this.state.changeIt) {
       iframeEventsDisable();
-      const x = getX(e);
+      const x = getCoordinate(e, 'X');
       this.setState({ changeIt: true, lastX: x });
+    }
+  };
+
+  onLeave = () => {
+    if (this.state.changeIt) {
+      iframeEventsEnable();
+      this.setState({ changeIt: false });
     }
   };
 
   setSelectedChat = () => {
     const selectedValue = this.selectChat.value;
     this.setState({ selectedValue, isLoading: true });
-  };
-
-  clickEnded = () => {
-    if (this.state.changeIt === true) {
-      iframeEventsEnable();
-      this.setState({ changeIt: false });
-    }
   };
 
   showChat = () => {
@@ -101,32 +98,27 @@ class ChatBox extends React.Component {
     }, 500);
     this.setState({ isHidden: false });
   };
+
   hideChat = () => {
     const chatElement = document.getElementById('chatBox');
     const videoAreaElement = document.getElementById('videoArea');
-    this.setState({
-      lastWidth: chatElement.style.width
-    });
+    this.setState({ lastWidth: chatElement.style.width });
     chatElement.style.transitionDuration = '0.5s';
     chatElement.style.width = `0px`;
     videoAreaElement.style.transitionDuration = `0.5s`;
     videoAreaElement.style.width = `100%`;
     setTimeout(() => {
       chatElement.style.display = 'none';
-      this.setState({
-        isLoading: true,
-        isHidden: true
-      });
+      this.setState({ isLoading: true, isHidden: true });
     }, 500);
   };
 
   changeWidth = e => {
-    const { changeIt, lastX } = this.state;
-    const chatElement = document.getElementById('chatBox');
-    const width = parseInt(chatElement.style.width, 10);
-    if (changeIt === true) {
-      const x = getX(e);
-      const mouseMoveX = lastX - x;
+    if (this.state.changeIt) {
+      const x = getCoordinate(e, 'X');
+      const mouseMoveX = this.state.lastX - x;
+      const chatElement = document.getElementById('chatBox');
+      const width = parseInt(chatElement.style.width, 10);
       const newWidth = Math.round(width + mouseMoveX);
       const windowWidth = getWindowWidth();
       if (newWidth > 200 && newWidth < windowWidth * 0.5) {
@@ -138,7 +130,7 @@ class ChatBox extends React.Component {
   };
 
   updateChatAndVideoSize = () => {
-    if (this.props.showChat === true) {
+    if (this.props.showChat) {
       const windowWidth = getWindowWidth();
       const chatElement = document.getElementById('chatBox');
       const width = parseInt(chatElement.style.width, 10);
@@ -148,11 +140,8 @@ class ChatBox extends React.Component {
         chatElement.style.width = `${Math.floor(windowWidth / 2)}px`;
       }
       document.getElementById('videoArea').style.width = `${newVideoWidth}px`;
-      if (windowWidth <= 700 && chatElement.style.width !== '0px') {
-        this.hideChat();
-      } else if (windowWidth > 700 && chatElement.style.width === '0px') {
-        this.showChat();
-      }
+      if (windowWidth <= 700 && chatElement.style.width !== '0px') this.hideChat();
+      else if (windowWidth > 700 && chatElement.style.width === '0px') this.showChat();
     }
   };
 
@@ -160,32 +149,36 @@ class ChatBox extends React.Component {
     const { isLoading, selectedValue, isHidden } = this.state;
     const { showChat } = this.props;
     localStorage.setItem('chatBoxState', JSON.stringify(this.state));
-
-    const streams = getStreamNames();
-    const chats = [];
-    for (let i = 0; i < streams.length; i += 1) {
-      if (streams[i][1] !== 'yt') {
-        chats.push(streams[i]);
-      }
+    let channelName = '';
+    if (selectedValue !== '') {
+      channelName = `${selectedValue.replace(',', '(')})`;
     }
 
-    const options = [];
     const link = window.location.hash;
-    if ((selectedValue === '' || !link.includes(selectedValue)) && chats[0]) {
-      this.setState({ isLoading: true, selectedValue: chats[0][0] });
-    } else if (selectedValue !== '' && !link.includes('(t)')) {
+    const chats = getStreamNames().reduce((filtered, stream) => {
+      if (stream[1] !== 'yt') filtered.push(stream);
+      return filtered;
+    }, []);
+
+    if ((selectedValue === '' || !link.includes(channelName)) && chats[0]) {
+      // Chat is avaiable but is not selected
+      this.setState({ isLoading: true, selectedValue: chats[0].toString() });
+    } else if (selectedValue !== '' && !/\(t\)|\(sc\)|\(m\)/.test(link)) {
+      // Chat is selected but stream is not there anymore...
       this.setState({ isLoading: true, selectedValue: '' });
     }
 
-    for (let i = 0; i <= chats.length; i += 1) {
-      if (chats[i]) {
-        options.push(
-          <option key={chats[i][0]} value={chats[i][0]}>
-            {chats[i][0]}
-          </option>
-        );
-      }
-    }
+    const options = chats.map(chat => {
+      const name = chat[0].charAt(0).toUpperCase() + chat[0].slice(1);
+      let optionText = `${name} - Twitch`;
+      if (chat[1] === 'sc') optionText = `${name} - Smashcast`;
+      else if (chat[1] === 'm') optionText = `${name} - Mixer`;
+      return (
+        <option key={optionText} value={chat}>
+          {optionText}
+        </option>
+      );
+    });
 
     return (
       <ChatBoxWrapper id="chatBox">
@@ -194,7 +187,7 @@ class ChatBox extends React.Component {
             ref={select => {
               this.selectChat = select;
             }}
-            onChange={this.setSelectedChat}
+            value={selectedValue}
           >
             {options}
           </select>
@@ -205,9 +198,9 @@ class ChatBox extends React.Component {
             this.chatChangeWidth = div;
           }}
         />
-        {isLoading === true && showChat === true && <Loading />}
-        {showChat === true &&
-          isHidden === false && (
+        {isLoading && showChat && <Loading />}
+        {showChat &&
+          !isHidden && (
             <Chat
               selectedChannelName={selectedValue}
               isLoading={bool => this.setState({ isLoading: bool })}
@@ -222,10 +215,8 @@ ChatBox.propTypes = {
   showChat: PropTypes.bool.isRequired
 };
 
-function mapStateToProps(state) {
-  return {
-    showChat: state.showChat
-  };
+function mapStateToProps({ showChat }) {
+  return { showChat };
 }
 
 export default connect(mapStateToProps)(ChatBox);
