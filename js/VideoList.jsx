@@ -19,18 +19,16 @@ class VideoList extends React.Component {
   }
 
   render() {
-    const videos = getStreamNames().reduce((filtered, video, i) => {
-      if (video)
-        filtered.push(
-          <Video
-            key={`${video[0]}(${video[1]})`}
-            channelName={video[0]}
-            platform={video[1]}
-            zIndex={i + 1}
-          />
-        );
-      return filtered;
-    }, []);
+    const videos = getStreamNames()
+      .filter(video => video)
+      .map((video, i) => (
+        <Video
+          key={`${video[0]}(${video[1]})`}
+          channelName={video[0]}
+          platform={video[1]}
+          zIndex={i + 1}
+        />
+      ));
 
     return <div>{videos}</div>;
   }

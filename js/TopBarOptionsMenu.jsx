@@ -37,7 +37,7 @@ const OptionsMenu = props => {
         </p>
         <p>
           Change videos layout<br />
-          <select value={props.videoLayout} onChange={changeVideoLayout}>
+          <select defaultValue={props.videoLayout} onChange={changeVideoLayout}>
             <option value="default">Default (Z-Shape)</option>
             <option value="horizontal">Horizontal</option>
             <option value="vertical">Vertical</option>

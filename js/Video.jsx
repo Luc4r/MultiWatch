@@ -28,7 +28,7 @@ class Video extends React.Component {
     const enteredName = `${this.props.channelName}(${this.props.platform})`;
     const cachedState = JSON.parse(localStorage.getItem(`${enteredName}State`));
     if (initialState !== cachedState && cachedState) {
-      initialState = Object.assign({}, cachedState, { isLoading: true });
+      initialState = { ...cachedState, isLoading: true };
     }
     this.state = initialState;
     let initialProperties = { left: 10, top: 10, width: 320, height: 180 };

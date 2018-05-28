@@ -29,7 +29,7 @@ class Alert extends React.Component {
   getTopMargin() {
     let additionalHeight = 60;
     if (this.props.isTopBarHidden === true) additionalHeight = 10;
-    return (this.props.alertIndex - 1) * 130 + additionalHeight;
+    return this.props.alertIndex * 130 + additionalHeight;
   }
 
   render() {

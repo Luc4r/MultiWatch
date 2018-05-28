@@ -23,9 +23,10 @@ const initialStoreState = {
   videoLayout: 'default'
 };
 const cachedStoreState = JSON.parse(localStorage.getItem('store'));
-if (cachedStoreState.showChat && cachedStoreState.videoLayout) {
-  initialStoreState.showChat = cachedStoreState.showChat;
-  initialStoreState.videoLayout = cachedStoreState.videoLayout;
+if (cachedStoreState) {
+  const { showChat, videoLayout } = cachedStoreState;
+  if (showChat) initialStoreState.showChat = showChat;
+  if (videoLayout) initialStoreState.videoLayout = videoLayout;
 }
 const store = createStore(reducer, initialStoreState);
 
@@ -33,7 +34,7 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      render: this.getRenderValue()
+      shouldRender: this.getRenderValue()
     };
   }
 
@@ -64,23 +65,23 @@ class App extends React.Component {
       localStorage.clear();
       store.dispatch({ type: 'STORE - CHANGE STATE', state: initialStoreState });
     }
-    this.setState({ render: true });
+    this.setState({ shouldRender: true });
   };
 
   render() {
-    const { render } = this.state;
+    const { shouldRender } = this.state;
 
     return (
       <Provider store={store}>
         <AppWrapper style={{ backgroundColor: '#222222' }}>
-          {render && (
+          {shouldRender && (
             <AppWrapper>
               <TopBar />
               <StreamArea />
               <AlertBox />
             </AppWrapper>
           )}
-          {!render && (
+          {!shouldRender && (
             <RenderAppWrapper>
               <p>Do you want to restore last session?</p>
               <button onClick={() => this.renderApp(true)}>Yes</button>

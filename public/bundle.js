@@ -1460,17 +1460,17 @@ module.exports = emptyFunction;
 /* unused harmony export withTheme */
 /* unused harmony export ServerStyleSheet */
 /* unused harmony export StyleSheetManager */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_is_plain_object__ = __webpack_require__(410);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_is_plain_object__ = __webpack_require__(412);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_is_plain_object___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_is_plain_object__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_stylis__ = __webpack_require__(412);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_stylis__ = __webpack_require__(414);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_stylis___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_stylis__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_is_function__ = __webpack_require__(413);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_is_function__ = __webpack_require__(415);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_is_function___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_is_function__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_hoist_non_react_statics__ = __webpack_require__(414);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_hoist_non_react_statics__ = __webpack_require__(416);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_hoist_non_react_statics___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_hoist_non_react_statics__);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
@@ -13437,10 +13437,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_redux__ = __webpack_require__(148);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_redux__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__redux_Reducer__ = __webpack_require__(408);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__TopBar__ = __webpack_require__(409);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__StreamArea__ = __webpack_require__(418);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__AlertBox__ = __webpack_require__(430);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__styled_App__ = __webpack_require__(432);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__TopBar__ = __webpack_require__(411);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__StreamArea__ = __webpack_require__(420);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__AlertBox__ = __webpack_require__(432);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__styled_App__ = __webpack_require__(434);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -13472,9 +13472,12 @@ var initialStoreState = {
   videoLayout: 'default'
 };
 var cachedStoreState = JSON.parse(localStorage.getItem('store'));
-if (cachedStoreState.showChat && cachedStoreState.videoLayout) {
-  initialStoreState.showChat = cachedStoreState.showChat;
-  initialStoreState.videoLayout = cachedStoreState.videoLayout;
+if (cachedStoreState) {
+  var showChat = cachedStoreState.showChat,
+      videoLayout = cachedStoreState.videoLayout;
+
+  if (showChat) initialStoreState.showChat = showChat;
+  if (videoLayout) initialStoreState.videoLayout = videoLayout;
 }
 var store = Object(__WEBPACK_IMPORTED_MODULE_2_redux__["b" /* createStore */])(__WEBPACK_IMPORTED_MODULE_4__redux_Reducer__["a" /* default */], initialStoreState);
 
@@ -13513,11 +13516,11 @@ var App = function (_React$Component) {
         localStorage.clear();
         store.dispatch({ type: 'STORE - CHANGE STATE', state: initialStoreState });
       }
-      _this.setState({ render: true });
+      _this.setState({ shouldRender: true });
     };
 
     _this.state = {
-      render: _this.getRenderValue()
+      shouldRender: _this.getRenderValue()
     };
     return _this;
   }
@@ -13525,7 +13528,7 @@ var App = function (_React$Component) {
   App.prototype.render = function render() {
     var _this2 = this;
 
-    var render = this.state.render;
+    var shouldRender = this.state.shouldRender;
 
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -13534,14 +13537,14 @@ var App = function (_React$Component) {
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         __WEBPACK_IMPORTED_MODULE_8__styled_App__["a" /* AppWrapper */],
         { style: { backgroundColor: '#222222' } },
-        render && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        shouldRender && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           __WEBPACK_IMPORTED_MODULE_8__styled_App__["a" /* AppWrapper */],
           null,
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__TopBar__["a" /* default */], null),
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_6__StreamArea__["a" /* default */], null),
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_7__AlertBox__["a" /* default */], null)
         ),
-        !render && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        !shouldRender && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           __WEBPACK_IMPORTED_MODULE_8__styled_App__["b" /* RenderAppWrapper */],
           null,
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -23164,99 +23167,67 @@ function verifySubselectors(mapStateToProps, mapDispatchToProps, mergeProps, dis
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var removeString = function removeString(mainString, stringToRemove, separator, replaceWith) {
-  var newString = mainString.split(separator).reduce(function (previous, string) {
-    if (string === stringToRemove) return '' + previous + replaceWith;
-    return '' + separator + string;
-  });
-  return newString;
-};
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__universalFunctions_removeString__ = __webpack_require__(409);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__universalFunctions_addAlert__ = __webpack_require__(410);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var addAlert = function addAlert(state, action) {
-  if (state.alertMessages.includes(action.message)) {
-    var alertElement = document.getElementById(action.message);
-    var alertNumberElement = document.getElementById('number' + action.message);
-    // Change alert background color
-    var bgColor = alertElement.style.backgroundColor;
-    var newRed = parseInt(bgColor.slice(bgColor.indexOf('(') + 1, bgColor.indexOf(',')), 10) + 20;
-    if (newRed < 220) {
-      var newBg = 'rgba(' + newRed + ',' + bgColor.slice(bgColor.indexOf(',') + 1, bgColor.length);
-      alertElement.style.backgroundColor = newBg;
-    }
-    // Change number of how many times has this alert been triggered
-    var alertNumber = parseInt(alertNumberElement.innerHTML, 10);
-    if (alertNumber < 99) {
-      alertNumberElement.innerHTML = alertNumber + 1;
-      if (!alertNumberElement.style.opacity) {
-        alertNumberElement.style.opacity = '1';
-      }
-    }
-    return state;
-  }
-  return Object.assign({}, state, {
-    activeAlerts: state.activeAlerts + 1,
-    alertMessages: state.alertMessages + ';' + action.message
-  });
-};
+
+
 
 var mainReducer = function mainReducer(state, action) {
   var newState = void 0;
   switch (action.type) {
     case 'TOPBAR - TOGGLE':
-      newState = Object.assign({}, state, { isTopBarHidden: !state.isTopBarHidden });
+      newState = _extends({}, state, { isTopBarHidden: !state.isTopBarHidden });
       break;
     case 'ALERT - ADD':
-      newState = addAlert(state, action);
+      newState = Object(__WEBPACK_IMPORTED_MODULE_1__universalFunctions_addAlert__["a" /* default */])(state, action);
       break;
     case 'ALERT - REMOVE':
       {
-        var newAlertMessages = removeString(state.alertMessages, action.message, ';', '');
-        newState = Object.assign({}, state, {
+        var newAlertMessages = Object(__WEBPACK_IMPORTED_MODULE_0__universalFunctions_removeString__["a" /* default */])(state.alertMessages, action.message, ';', '');
+        newState = _extends({}, state, {
           activeAlerts: state.activeAlerts - 1,
           alertMessages: newAlertMessages
         });
         break;
       }
     case 'STREAM - OPEN':
-      newState = Object.assign({}, state, {
-        openedStreams: state.openedStreams + 1
-      });
+      newState = _extends({}, state, { openedStreams: state.openedStreams + 1 });
       break;
     case 'STREAM - CLOSE':
       {
-        newState = Object.assign({}, state, {
-          openedStreams: state.openedStreams - 1
-        });
+        newState = _extends({}, state, { openedStreams: state.openedStreams - 1 });
         break;
       }
     case 'STREAM - PIN':
-      newState = Object.assign({}, state, {
+      newState = _extends({}, state, {
         pinnedStreams: state.pinnedStreams + 1,
         pinnedStreamNames: state.pinnedStreamNames + ' ' + action.name
       });
       break;
     case 'STREAM - UNPIN':
       {
-        var newPinnedStreamNames = removeString(state.pinnedStreamNames, action.name, ' ', '');
-        newState = Object.assign({}, state, {
+        var newPinnedStreamNames = Object(__WEBPACK_IMPORTED_MODULE_0__universalFunctions_removeString__["a" /* default */])(state.pinnedStreamNames, action.name, ' ', '');
+        newState = _extends({}, state, {
           pinnedStreams: state.pinnedStreams - 1,
           pinnedStreamNames: newPinnedStreamNames
         });
         break;
       }
     case 'STREAM - CHANGE LAYOUT':
-      newState = Object.assign({}, state, { videoLayout: action.newLayout });
+      newState = _extends({}, state, { videoLayout: action.newLayout });
       break;
     case 'CHAT - TOGGLE':
-      newState = Object.assign({}, state, { showChat: !state.showChat });
+      newState = _extends({}, state, { showChat: !state.showChat });
       break;
     case 'STORE - CHANGE STATE':
-      newState = Object.assign({}, state, action.state);
+      newState = action.state;
       break;
     default:
       return state;
   }
-  var storageItem = Object.assign({}, newState, { activeAlerts: 0, alertMessages: '' });
+  var storageItem = _extends({}, newState, { activeAlerts: 0, alertMessages: '' });
   localStorage.setItem('store', JSON.stringify(storageItem));
   return newState;
 };
@@ -23268,15 +23239,72 @@ var mainReducer = function mainReducer(state, action) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+var removeString = function removeString(mainString, stringToRemove, separator, replaceWith) {
+  var newString = mainString.split(separator).reduce(function (previous, string) {
+    if (string === stringToRemove) return "" + previous + replaceWith;
+    return "" + previous + separator + string;
+  });
+  return newString;
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (removeString);
+
+/***/ }),
+/* 410 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var changeAlertCount = function changeAlertCount(message) {
+  var alertNumberElement = document.getElementById('number' + message);
+  var alertNumber = parseInt(alertNumberElement.innerHTML, 10);
+  if (alertNumber < 99) {
+    alertNumberElement.innerHTML = alertNumber + 1;
+    if (!alertNumberElement.style.opacity) {
+      alertNumberElement.style.opacity = '1';
+    }
+  }
+};
+
+var changeAlertBackground = function changeAlertBackground(message) {
+  var alertElement = document.getElementById(message);
+  var bgColor = alertElement.style.backgroundColor;
+  var newRed = parseInt(bgColor.slice(bgColor.indexOf('(') + 1, bgColor.indexOf(',')), 10) + 20;
+  if (newRed < 220) {
+    var newBg = 'rgba(' + newRed + ',' + bgColor.slice(bgColor.indexOf(',') + 1, bgColor.length);
+    alertElement.style.backgroundColor = newBg;
+  }
+};
+
+var getStateAfterAddingAlert = function getStateAfterAddingAlert(state, action) {
+  if (state.alertMessages.includes(action.message)) {
+    changeAlertBackground(action.message);
+    changeAlertCount(action.message);
+    return state;
+  }
+  return _extends({}, state, {
+    activeAlerts: state.activeAlerts + 1,
+    alertMessages: state.alertMessages + ';' + action.message
+  });
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (getStateAfterAddingAlert);
+
+/***/ }),
+/* 411 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__styled_TopBar__ = __webpack_require__(105);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__TopBarOptionsMenu__ = __webpack_require__(415);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__TopBarSearchSection__ = __webpack_require__(416);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__assets_Logo_png__ = __webpack_require__(417);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__TopBarOptionsMenu__ = __webpack_require__(417);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__TopBarSearchSection__ = __webpack_require__(418);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__assets_Logo_png__ = __webpack_require__(419);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__assets_Logo_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__assets_Logo_png__);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -23360,7 +23388,7 @@ function mapDispatchToProps(dispatch) {
 /* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_1_react_redux__["b" /* connect */])(mapStateToProps, mapDispatchToProps)(TopBar));
 
 /***/ }),
-/* 410 */
+/* 412 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23373,7 +23401,7 @@ function mapDispatchToProps(dispatch) {
 
 
 
-var isObject = __webpack_require__(411);
+var isObject = __webpack_require__(413);
 
 function isObjectObject(o) {
   return isObject(o) === true && Object.prototype.toString.call(o) === '[object Object]';
@@ -23402,7 +23430,7 @@ module.exports = function isPlainObject(o) {
 };
 
 /***/ }),
-/* 411 */
+/* 413 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23422,7 +23450,7 @@ module.exports = function isObject(val) {
 };
 
 /***/ }),
-/* 412 */
+/* 414 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -25095,7 +25123,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;var _typeof = 
 });
 
 /***/ }),
-/* 413 */
+/* 415 */
 /***/ (function(module, exports) {
 
 module.exports = isFunction;
@@ -25110,7 +25138,7 @@ function isFunction(fn) {
 };
 
 /***/ }),
-/* 414 */
+/* 416 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25165,7 +25193,7 @@ module.exports = function hoistNonReactStatics(targetComponent, sourceComponent,
 };
 
 /***/ }),
-/* 415 */
+/* 417 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25231,7 +25259,7 @@ var OptionsMenu = function OptionsMenu(props) {
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'select',
-          { value: props.videoLayout, onChange: changeVideoLayout },
+          { defaultValue: props.videoLayout, onChange: changeVideoLayout },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'option',
             { value: 'default' },
@@ -25287,7 +25315,7 @@ function mapDispatchToProps(dispatch) {
 /* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_1_react_redux__["b" /* connect */])(mapStateToProps, mapDispatchToProps)(OptionsMenu));
 
 /***/ }),
-/* 416 */
+/* 418 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25337,14 +25365,14 @@ var SearchSection = function (_React$Component) {
       var link = window.location.hash.toLowerCase();
       if (enteredString.length <= 1) return 'Channel name must be at least 2 charakters long';
       if (_this.props.openedStreams > 7) return 'You cannot open more than 8 streams... sorry!';
-      if (link.includes(enteredStringLowerCase)) return link.split('#').reduce(function (filtered, stream) {
+      if (link.includes(enteredStringLowerCase)) return link.split('#').reduce(function (value, stream) {
         var streamName = stream.slice(0, stream.indexOf('('));
         var streamPlatform = stream.slice(stream.indexOf('(') + 1, stream.length - 1);
         if (streamName === enteredStringLowerCase && streamPlatform === platform) {
-          filtered.push('This stream is already opened');
+          return 'This stream is already opened';
         }
-        return filtered;
-      }, [])[0];
+        return value;
+      });
       return '';
     }, _this.addStream = function () {
       // TO DO: same youtube channel - entered ID and NAME.
@@ -25466,13 +25494,13 @@ function mapDispatchToProps(dispatch) {
 /* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_1_react_redux__["b" /* connect */])(mapStateToProps, mapDispatchToProps)(SearchSection));
 
 /***/ }),
-/* 417 */
+/* 419 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "9f9f1f7a8dbbbcc89e0eaa53fbeb28b3.png";
 
 /***/ }),
-/* 418 */
+/* 420 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25481,9 +25509,9 @@ module.exports = __webpack_require__.p + "9f9f1f7a8dbbbcc89e0eaa53fbeb28b3.png";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ChatBox__ = __webpack_require__(419);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__VideoList__ = __webpack_require__(421);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__styled_StreamArea__ = __webpack_require__(429);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ChatBox__ = __webpack_require__(421);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__VideoList__ = __webpack_require__(423);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__styled_StreamArea__ = __webpack_require__(431);
 
 
 
@@ -25527,7 +25555,7 @@ function mapStateToProps(_ref) {
 /* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_1_react_redux__["b" /* connect */])(mapStateToProps)(StreamArea));
 
 /***/ }),
-/* 419 */
+/* 421 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25536,13 +25564,15 @@ function mapStateToProps(_ref) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Chat__ = __webpack_require__(420);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Chat__ = __webpack_require__(422);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__styled_ChatBox__ = __webpack_require__(157);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Loading__ = __webpack_require__(158);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__universalFunctions_windowProperties__ = __webpack_require__(106);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__universalFunctions_getCoordinate__ = __webpack_require__(159);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__universalFunctions_iframeEvents__ = __webpack_require__(160);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__universalFunctions_getStreamNames__ = __webpack_require__(161);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -25663,7 +25693,7 @@ var ChatBox = function (_React$Component) {
     };
     var cachedState = JSON.parse(localStorage.getItem('chatBoxState'));
     if (initialState !== cachedState && cachedState) {
-      initialState = Object.assign({}, cachedState, { isLoading: true });
+      initialState = _extends({}, cachedState, { isLoading: true });
     }
     _this.state = initialState;
     return _this;
@@ -25672,7 +25702,6 @@ var ChatBox = function (_React$Component) {
   ChatBox.prototype.componentDidMount = function componentDidMount() {
     if (this.props.showChat) this.showChat();
     window.addEventListener('resize', this.updateChatAndVideoSize);
-    this.selectChat.addEventListener('change', this.setSelectedChat);
     // DESKTOP:
     this.chatChangeWidth.addEventListener('mousedown', this.onDown);
     document.body.addEventListener('mousemove', this.changeWidth);
@@ -25693,7 +25722,6 @@ var ChatBox = function (_React$Component) {
 
   ChatBox.prototype.componentWillUnmount = function componentWillUnmount() {
     window.removeEventListener('resize', this.updateChatAndVideoSize);
-    this.selectChat.removeEventListener('change', this.setSelectedChat);
     // DESKTOP:
     this.chatChangeWidth.removeEventListener('mousedown', this.onDown);
     document.body.removeEventListener('mousemove', this.changeWidth);
@@ -25721,16 +25749,17 @@ var ChatBox = function (_React$Component) {
     }
 
     var link = window.location.hash;
-    var chats = Object(__WEBPACK_IMPORTED_MODULE_9__universalFunctions_getStreamNames__["a" /* default */])().reduce(function (filtered, stream) {
-      if (stream[1] !== 'yt') filtered.push(stream);
-      return filtered;
-    }, []);
+    var chats = Object(__WEBPACK_IMPORTED_MODULE_9__universalFunctions_getStreamNames__["a" /* default */])().filter(function (stream) {
+      return stream[1] !== 'yt';
+    }).map(function (stream) {
+      return stream;
+    });
 
     if ((selectedValue === '' || !link.includes(channelName)) && chats[0]) {
       // Chat is avaiable but is not selected
       this.setState({ isLoading: true, selectedValue: chats[0].toString() });
     } else if (selectedValue !== '' && !/\(t\)|\(sc\)|\(m\)/.test(link)) {
-      // Chat is selected but stream is not there anymore...
+      // Chat is selected but there are no chats avaiable...
       this.setState({ isLoading: true, selectedValue: '' });
     }
 
@@ -25754,7 +25783,8 @@ var ChatBox = function (_React$Component) {
           ref: function ref(select) {
             _this2.selectChat = select;
           },
-          defaultValue: selectedValue
+          defaultValue: selectedValue,
+          onChange: this.setSelectedChat
         },
         options
       ),
@@ -25790,7 +25820,7 @@ function mapStateToProps(_ref) {
 /* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_1_react_redux__["b" /* connect */])(mapStateToProps)(ChatBox));
 
 /***/ }),
-/* 420 */
+/* 422 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25855,7 +25885,7 @@ Chat.propTypes = {
 /* harmony default export */ __webpack_exports__["a"] = (Chat);
 
 /***/ }),
-/* 421 */
+/* 423 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25864,7 +25894,7 @@ Chat.propTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Video__ = __webpack_require__(422);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Video__ = __webpack_require__(424);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__universalFunctions_getStreamNames__ = __webpack_require__(161);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -25902,15 +25932,16 @@ var VideoList = function (_React$Component) {
   };
 
   VideoList.prototype.render = function render() {
-    var videos = Object(__WEBPACK_IMPORTED_MODULE_4__universalFunctions_getStreamNames__["a" /* default */])().reduce(function (filtered, video, i) {
-      if (video) filtered.push(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__Video__["a" /* default */], {
+    var videos = Object(__WEBPACK_IMPORTED_MODULE_4__universalFunctions_getStreamNames__["a" /* default */])().filter(function (video) {
+      return video;
+    }).map(function (video, i) {
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__Video__["a" /* default */], {
         key: video[0] + '(' + video[1] + ')',
         channelName: video[0],
         platform: video[1],
         zIndex: i + 1
-      }));
-      return filtered;
-    }, []);
+      });
+    });
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
@@ -25937,7 +25968,7 @@ function mapDispatchToProps(dispatch) {
 /* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_1_react_redux__["b" /* connect */])(null, mapDispatchToProps)(VideoList));
 
 /***/ }),
-/* 422 */
+/* 424 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25946,14 +25977,16 @@ function mapDispatchToProps(dispatch) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_css_element_queries__ = __webpack_require__(423);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_css_element_queries__ = __webpack_require__(425);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_css_element_queries___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_css_element_queries__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__styled_Video__ = __webpack_require__(425);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__VideoMenu__ = __webpack_require__(426);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__styled_Video__ = __webpack_require__(427);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__VideoMenu__ = __webpack_require__(428);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Loading__ = __webpack_require__(158);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__universalFunctions_windowProperties__ = __webpack_require__(106);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__universalFunctions_getCoordinate__ = __webpack_require__(159);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__universalFunctions_iframeEvents__ = __webpack_require__(160);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -25997,7 +26030,7 @@ var Video = function (_React$Component) {
     var enteredName = _this.props.channelName + '(' + _this.props.platform + ')';
     var cachedState = JSON.parse(localStorage.getItem(enteredName + 'State'));
     if (initialState !== cachedState && cachedState) {
-      initialState = Object.assign({}, cachedState, { isLoading: true });
+      initialState = _extends({}, cachedState, { isLoading: true });
     }
     _this.state = initialState;
     var initialProperties = { left: 10, top: 10, width: 320, height: 180 };
@@ -26413,16 +26446,16 @@ function mapStateToProps(_ref) {
 /* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_1_react_redux__["b" /* connect */])(mapStateToProps)(Video));
 
 /***/ }),
-/* 423 */
+/* 425 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = {
     ResizeSensor: __webpack_require__(162),
-    ElementQueries: __webpack_require__(424)
+    ElementQueries: __webpack_require__(426)
 };
 
 /***/ }),
-/* 424 */
+/* 426 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26963,7 +26996,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 });
 
 /***/ }),
-/* 425 */
+/* 427 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -26979,7 +27012,7 @@ var VideoWrapper = __WEBPACK_IMPORTED_MODULE_0_styled_components__["a" /* defaul
 /* harmony default export */ __webpack_exports__["a"] = (VideoWrapper);
 
 /***/ }),
-/* 426 */
+/* 428 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -26987,8 +27020,8 @@ var VideoWrapper = __WEBPACK_IMPORTED_MODULE_0_styled_components__["a" /* defaul
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__VideoMenuMoveResize__ = __webpack_require__(427);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__VideoMenuPinClose__ = __webpack_require__(428);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__VideoMenuMoveResize__ = __webpack_require__(429);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__VideoMenuPinClose__ = __webpack_require__(430);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__styled_VideoMenu__ = __webpack_require__(107);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -27107,7 +27140,7 @@ VideoMenu.propTypes = {
 /* harmony default export */ __webpack_exports__["a"] = (VideoMenu);
 
 /***/ }),
-/* 427 */
+/* 429 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -27232,7 +27265,7 @@ MoveAndResize.propTypes = {
 /* harmony default export */ __webpack_exports__["a"] = (MoveAndResize);
 
 /***/ }),
-/* 428 */
+/* 430 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -27583,7 +27616,7 @@ function mapStateToProps(_ref) {
 /* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_2_react_redux__["b" /* connect */])(mapStateToProps, mapDispatchToProps)(MoveAndResize));
 
 /***/ }),
-/* 429 */
+/* 431 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -27604,7 +27637,7 @@ var VideoAreaWrapper = __WEBPACK_IMPORTED_MODULE_0_styled_components__["a" /* de
 
 
 /***/ }),
-/* 430 */
+/* 432 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -27613,7 +27646,7 @@ var VideoAreaWrapper = __WEBPACK_IMPORTED_MODULE_0_styled_components__["a" /* de
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Alert__ = __webpack_require__(431);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Alert__ = __webpack_require__(433);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__styled_AlertBox__ = __webpack_require__(163);
 
 
@@ -27623,10 +27656,11 @@ var VideoAreaWrapper = __WEBPACK_IMPORTED_MODULE_0_styled_components__["a" /* de
 
 
 var AlertBox = function AlertBox(props) {
-  var alerts = props.alertMessages.split(';').reduce(function (filtered, alert, i) {
-    if (alert) filtered.push(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__Alert__["a" /* default */], { key: alert, alertIndex: i, alertMessage: alert }));
-    return filtered;
-  }, []);
+  var alerts = props.alertMessages.split(';').filter(function (alert) {
+    return alert;
+  }).map(function (alert, i) {
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__Alert__["a" /* default */], { key: alert, alertIndex: i, alertMessage: alert });
+  });
 
   return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
     __WEBPACK_IMPORTED_MODULE_4__styled_AlertBox__["a" /* AlertBoxWrapper */],
@@ -27648,7 +27682,7 @@ function mapStateToProps(_ref) {
 /* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_1_react_redux__["b" /* connect */])(mapStateToProps)(AlertBox));
 
 /***/ }),
-/* 431 */
+/* 433 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -27704,7 +27738,7 @@ var Alert = function (_React$Component) {
   Alert.prototype.getTopMargin = function getTopMargin() {
     var additionalHeight = 60;
     if (this.props.isTopBarHidden === true) additionalHeight = 10;
-    return (this.props.alertIndex - 1) * 130 + additionalHeight;
+    return this.props.alertIndex * 130 + additionalHeight;
   };
 
   Alert.prototype.render = function render() {
@@ -27770,7 +27804,7 @@ function mapStateToProps(_ref) {
 /* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_1_react_redux__["b" /* connect */])(mapStateToProps, mapDispatchToProps)(Alert));
 
 /***/ }),
-/* 432 */
+/* 434 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

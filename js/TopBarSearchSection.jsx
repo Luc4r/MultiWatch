@@ -36,14 +36,14 @@ class SearchSection extends React.Component {
     if (enteredString.length <= 1) return 'Channel name must be at least 2 charakters long';
     if (this.props.openedStreams > 7) return 'You cannot open more than 8 streams... sorry!';
     if (link.includes(enteredStringLowerCase))
-      return link.split('#').reduce((filtered, stream) => {
+      return link.split('#').reduce((value, stream) => {
         const streamName = stream.slice(0, stream.indexOf('('));
         const streamPlatform = stream.slice(stream.indexOf('(') + 1, stream.length - 1);
         if (streamName === enteredStringLowerCase && streamPlatform === platform) {
-          filtered.push('This stream is already opened');
+          return 'This stream is already opened';
         }
-        return filtered;
-      }, [])[0];
+        return value;
+      });
     return '';
   };
 

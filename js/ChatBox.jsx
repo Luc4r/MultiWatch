@@ -23,14 +23,13 @@ class ChatBox extends React.Component {
     };
     const cachedState = JSON.parse(localStorage.getItem('chatBoxState'));
     if (initialState !== cachedState && cachedState) {
-      initialState = Object.assign({}, cachedState, { isLoading: true });
+      initialState = { ...cachedState, isLoading: true };
     }
     this.state = initialState;
   }
   componentDidMount() {
     if (this.props.showChat) this.showChat();
     window.addEventListener('resize', this.updateChatAndVideoSize);
-    this.selectChat.addEventListener('change', this.setSelectedChat);
     // DESKTOP:
     this.chatChangeWidth.addEventListener('mousedown', this.onDown);
     document.body.addEventListener('mousemove', this.changeWidth);
@@ -49,7 +48,6 @@ class ChatBox extends React.Component {
   }
   componentWillUnmount() {
     window.removeEventListener('resize', this.updateChatAndVideoSize);
-    this.selectChat.removeEventListener('change', this.setSelectedChat);
     // DESKTOP:
     this.chatChangeWidth.removeEventListener('mousedown', this.onDown);
     document.body.removeEventListener('mousemove', this.changeWidth);
@@ -155,16 +153,15 @@ class ChatBox extends React.Component {
     }
 
     const link = window.location.hash;
-    const chats = getStreamNames().reduce((filtered, stream) => {
-      if (stream[1] !== 'yt') filtered.push(stream);
-      return filtered;
-    }, []);
+    const chats = getStreamNames()
+      .filter(stream => stream[1] !== 'yt')
+      .map(stream => stream);
 
     if ((selectedValue === '' || !link.includes(channelName)) && chats[0]) {
       // Chat is avaiable but is not selected
       this.setState({ isLoading: true, selectedValue: chats[0].toString() });
     } else if (selectedValue !== '' && !/\(t\)|\(sc\)|\(m\)/.test(link)) {
-      // Chat is selected but stream is not there anymore...
+      // Chat is selected but there are no chats avaiable...
       this.setState({ isLoading: true, selectedValue: '' });
     }
 
@@ -184,15 +181,20 @@ class ChatBox extends React.Component {
       <ChatBoxWrapper id="chatBox">
         {chats[0] && (
           <select
-            ref={select => { this.selectChat = select; }}
+            ref={select => {
+              this.selectChat = select;
+            }}
             defaultValue={selectedValue}
+            onChange={this.setSelectedChat}
           >
             {options}
           </select>
         )}
         <div
           style={{ zIndex: 1 }}
-          ref={div => { this.chatChangeWidth = div; }}
+          ref={div => {
+            this.chatChangeWidth = div;
+          }}
         />
         {isLoading && showChat && <Loading />}
         {showChat &&
