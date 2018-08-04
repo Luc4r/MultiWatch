@@ -19,7 +19,9 @@ const StreamArea = props => {
       <VideoAreaWrapper id="videoArea">
         <VideoList openedStreams={props.openedStreams} />
       </VideoAreaWrapper>
-      {props.openedStreams > 0 && <ChatBox openedStreams={props.openedStreams} />}
+      {props.openedStreams > 0 && (
+        <ChatBox openedStreams={props.openedStreams} />
+      )}
     </ContentAreaWrapper>
   );
 };
@@ -31,6 +33,6 @@ StreamArea.propTypes = {
 
 function mapStateToProps({ isTopBarHidden, openedStreams }) {
   return { isTopBarHidden, openedStreams };
-}
+};
 
 export default connect(mapStateToProps)(StreamArea);

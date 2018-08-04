@@ -31,6 +31,7 @@ class Video extends React.Component {
       initialState = { ...cachedState, isLoading: true };
     }
     this.state = initialState;
+    
     let initialProperties = { left: 10, top: 10, width: 320, height: 180 };
     const cachedProperties = JSON.parse(localStorage.getItem(`${enteredName}Properties`));
     if (initialProperties !== cachedProperties && cachedProperties && !initialState.isPinned) {
@@ -43,7 +44,8 @@ class Video extends React.Component {
       localStorage.setItem(`${enteredName}Properties`, JSON.stringify(initialProperties));
     }
     this.properties = initialProperties;
-  }
+  };
+
   componentWillMount() {
     if (this.props.platform === 'yt') {
       // get channelID - needed to find the livestream
@@ -81,18 +83,17 @@ class Video extends React.Component {
           }
         });
     }
-  }
+  };
+
   componentDidMount() {
     const enteredName = `${this.props.channelName}(${this.props.platform})`;
     const videoElement = document.getElementById(enteredName);
     this.resize = new ResizeSensor(document.getElementById('videoArea'), () => {
       this.updateRectanglePositionOnWindowResize();
     });
-    videoElement.addEventListener('mousedown', this.onDown);
     document.body.addEventListener('mousemove', this.onMove);
     document.body.addEventListener('mouseup', this.onLeave);
     document.body.addEventListener('mouseleave', this.onLeave);
-    videoElement.addEventListener('touchstart', this.onDown);
     document.body.addEventListener('touchmove', this.onMove);
     document.body.addEventListener('touchend', this.onLeave);
     localStorage.setItem('openedStreams', window.location.hash);
@@ -103,7 +104,8 @@ class Video extends React.Component {
       setTimeout(() => {
         videoElement.style.transitionDuration = '0s';
       }, 500);
-  }
+  };
+
   shouldComponentUpdate(nextProps) {
     // Any better solution than this? - if user close any stream rebind all
     // resize sensors from others to the videoArea
@@ -118,22 +120,18 @@ class Video extends React.Component {
       });
     }
     return true;
-  }
+  };
+
   componentWillUnmount() {
-    const videoElement = document.getElementById(
-      `${this.props.channelName}(${this.props.platform})`
-    );
     this.resize.detach(); // removing 1 = removing all => usage of shouldComponentUpdate
     window.removeEventListener('resize', this.updateRectanglePositionOnWindowResize);
-    videoElement.removeEventListener('mousedown', this.onDown);
     document.body.removeEventListener('mousemove', this.onMove);
     document.body.removeEventListener('mouseup', this.onLeave);
     document.body.removeEventListener('mouseleave', this.onLeave);
-    videoElement.removeEventListener('touchstart', this.onDown);
     document.body.removeEventListener('touchmove', this.onMove);
     document.body.removeEventListener('touchend', this.onLeave);
     localStorage.setItem('openedStreams', window.location.hash);
-  }
+  };
 
   onDown = e => {
     if (!this.state.isPinned) {
@@ -150,6 +148,7 @@ class Video extends React.Component {
   };
 
   onMove = e => {
+    console.log(this.state);
     if (!this.state.isPinned) {
       const { onRectangle } = this.state;
       if (onRectangle) {
@@ -351,8 +350,16 @@ class Video extends React.Component {
     const { left, top, width, height } = this.properties;
 
     return (
-      <VideoWrapper id={enteredName} className="video" style={{ top, left, height, width, zIndex }}>
-        {isLoading && <Loading />}
+      <VideoWrapper 
+        id={enteredName} 
+        className="video" // used to disable mouse events
+        onMouseDown={this.onDown}
+        onTouchStart={this.onDown}
+        style={{ top, left, height, width, zIndex }}
+      >
+        {isLoading && (
+          <Loading />
+        )}
         <VideoMenu
           parentState={this.state}
           channelName={channelName}
@@ -368,12 +375,13 @@ class Video extends React.Component {
           width="100%"
           scrolling="false"
           allowFullScreen="true"
+          frameBorder="0"
           onLoad={() => this.setState({ isLoading: false })}
         />
       </VideoWrapper>
     );
-  }
-}
+  };
+};
 
 Video.propTypes = {
   channelName: PropTypes.string.isRequired,
@@ -387,6 +395,6 @@ Video.propTypes = {
 
 function mapStateToProps({ openedStreams, isTopBarHidden, showChat }) {
   return { openedStreams, isTopBarHidden, showChat };
-}
+};
 
 export default connect(mapStateToProps)(Video);

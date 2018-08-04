@@ -1,34 +1,31 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
-import reducer from './redux/Reducer';
+import Background from './Background';
 import TopBar from './TopBar';
 import StreamArea from './StreamArea';
 import AlertBox from './AlertBox';
-import { AppWrapper, RenderAppWrapper } from './styled/App';
+import {   
+  AppWrapper, 
+  RenderAppWrapper,
+  RenderAppTitleWrapper,
+  RenderAppButton,
+  RenderAppDescriptionWrapper  
+} from './styled/App';
+import createCustomStore from './universalFunctions/createStore';
 
-const link = window.location.hash;
-const openedStreams = link.split('#').length - 1;
-const initialStoreState = {
-  isTopBarHidden: false,
-  activeAlerts: 0,
-  alertMessages: '',
-  openedStreams,
-  pinnedStreams: 0,
-  pinnedStreamNames: '',
-  // USER SETTINGS
-  showChat: false,
-  videoLayout: 'default'
-};
-const cachedStoreState = JSON.parse(localStorage.getItem('store'));
-if (cachedStoreState) {
-  const { showChat, videoLayout } = cachedStoreState;
-  if (showChat) initialStoreState.showChat = showChat;
-  if (videoLayout) initialStoreState.videoLayout = videoLayout;
+// Remove duplicates from URL
+const streamsNoDuplicates = Array.from(new Set(window.location.hash.split('#')));
+if (streamsNoDuplicates.length > 1) {
+  window.history.pushState('', '', streamsNoDuplicates.join('#'));
 }
-const store = createStore(reducer, initialStoreState);
+// Create store
+const {
+  store, 
+  initialStoreState,
+  cachedStoreState
+} = createCustomStore(streamsNoDuplicates);
 
 class App extends React.Component {
   constructor() {
@@ -36,30 +33,28 @@ class App extends React.Component {
     this.state = {
       shouldRender: this.getRenderValue()
     };
-  }
+  };
 
   getRenderValue = () => {
     const cachedStreams = localStorage.getItem('openedStreams');
-    if (cachedStoreState && cachedStreams) {
-      if (link.length > 1) {
-        if (link !== cachedStreams) {
-          localStorage.clear();
-          localStorage.setItem('store', JSON.stringify(initialStoreState));
-        } else {
-          store.dispatch({ type: 'STORE - CHANGE STATE', state: cachedStoreState });
-        }
-        return true;
+    if (!cachedStoreState || !cachedStreams) return true;
+
+    if (streamsNoDuplicates.length > 1) {
+      if (streamsNoDuplicates.join('#') === cachedStreams) {
+        store.dispatch({ type: 'STORE - CHANGE STATE', state: cachedStoreState });
+      } else {
+        localStorage.clear();
+        localStorage.setItem('store', JSON.stringify(initialStoreState));
       }
-      if (cachedStoreState.openedStreams !== 0) return false;
-    } else if (link !== cachedStreams) {
-      localStorage.clear();
-      localStorage.setItem('store', JSON.stringify(initialStoreState));
+    } else if (cachedStoreState.openedStreams !== 0) {
+      return false;
     }
     return true;
   };
 
   renderApp = changeStoreState => {
     if (changeStoreState) {
+      window.history.pushState('', '', localStorage.getItem('openedStreams'));
       store.dispatch({ type: 'STORE - CHANGE STATE', state: cachedStoreState });
     } else {
       localStorage.clear();
@@ -70,10 +65,10 @@ class App extends React.Component {
 
   render() {
     const { shouldRender } = this.state;
-
     return (
       <Provider store={store}>
-        <AppWrapper style={{ backgroundColor: '#222222' }}>
+        <AppWrapper>
+          <Background />
           {shouldRender && (
             <AppWrapper>
               <TopBar />
@@ -83,20 +78,26 @@ class App extends React.Component {
           )}
           {!shouldRender && (
             <RenderAppWrapper>
-              <p>Do you want to restore last session?</p>
-              <button onClick={() => this.renderApp(true)}>Yes</button>
-              <button onClick={() => this.renderApp(false)}>No</button>
+              <RenderAppTitleWrapper>
+                Do you want to restore last session?
+              </RenderAppTitleWrapper>
+              <RenderAppButton onClick={() => this.renderApp(true)}>
+                Yes
+              </RenderAppButton>
+              <RenderAppButton onClick={() => this.renderApp(false)}>
+                No
+              </RenderAppButton>
               <br />
-              <span>
+              <RenderAppDescriptionWrapper>
                 Last session streams: <br />
                 <i>{localStorage.getItem('openedStreams').replace(/#/g, ' ')}</i>
-              </span>
+              </RenderAppDescriptionWrapper>
             </RenderAppWrapper>
           )}
         </AppWrapper>
       </Provider>
     );
-  }
-}
+  };
+};
 
 ReactDOM.render(React.createElement(App), document.getElementById('app'));

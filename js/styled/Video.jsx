@@ -7,12 +7,12 @@ const VideoWrapper = styled.div`
   box-sizing: border-box;
   opacity: 0;
   transition-duration: 0.7s;
+  border: 1px solid #121212;
 
   iframe {
     position: absolute;
-    top: -1px;
-    left: -1px;
-    border: 1px solid #121212;
+    top: 0;
+    left: 0;
   }
 `;
 

@@ -7,40 +7,52 @@ const ChatBoxWrapper = styled.div`
   height: 100%;
   box-sizing: border-box;
   background-color: #060f1b;
-  border-left: 1px solid #2350a9;
-  overflow: hidden;
   display: none;
 
-  select {
-    position: absolute;
-    top: 10px;
-    left: 0;
-    right: 0;
-    margin: auto;
-    width: 50%;
-    height: 30px;
-    outline: none;
-    color: white;
-    text-align: center;
-    transition-duration: 1s;
-    z-index: 1;
-    background-color: #444444;
-    border: 1px solid #222222;
-  }
-
-  div {
-    position: absolute;
-    height: 100%;
-    width: 10px;
-    left: -5px;
-    cursor: e-resize;
-  }
-
   iframe {
-    position: absolute;
-    top: 50px;
+    margin-top: 50px;
     height: calc(100% - 50px);
   }
+`;
+
+const ChatSelectWrapper = styled.select`
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 50%;
+  height: 30px;
+  outline: none;
+  color: white;
+  text-align: center;
+  transition-duration: 1s;
+  background-color: #444444;
+  border: 1px solid #222222;
+`;
+
+const ChatChangeWidthWrapper = styled.div`
+  position: absolute;
+  height: 100%;
+  width: 10px;
+  left: -5px;
+  cursor: e-resize;
+  z-index: 1;
+
+  &:hover > div {
+    width: 10px;
+    left: 0px;
+  }
+`;
+
+const ChatChangeWidthLine = styled.div`
+  position: absolute;
+  height: 100%;
+  width: 1px;
+  left: 4px;
+  display: table;
+  background-color: #2350a9;
+  transition-duration: 0.3s;
 `;
 
 const ChatErrorWrapper = styled.span`
@@ -62,4 +74,10 @@ const ChatErrorWrapper = styled.span`
   }
 `;
 
-export { ChatBoxWrapper, ChatErrorWrapper };
+export { 
+  ChatBoxWrapper, 
+  ChatSelectWrapper, 
+  ChatChangeWidthWrapper, 
+  ChatChangeWidthLine, 
+  ChatErrorWrapper 
+};

@@ -2,23 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { SearchInputWrapper } from './styled/TopBar';
+import { enterPressEvent } from './universalFunctions/eventHandlers';
+import { SearchInputWrapper, SearchIconButton } from './styled/TopBar';
 
 const format = /[`~!@#$%^&*()+=[\]{};'"\\|,<>?]/;
 
-class SearchSection extends React.Component {
-  componentDidMount() {
-    const searchInputElement = document.getElementById('searchChannel');
-    searchInputElement.addEventListener('input', this.onInputChange);
-    searchInputElement.addEventListener('keydown', this.specialInputEvents);
-    this.addButton.addEventListener('click', this.addStream);
-  }
-  componentWillUnmount() {
-    const searchInputElement = document.getElementById('searchChannel');
-    searchInputElement.removeEventListener('input', this.onInputChange);
-    searchInputElement.removeEventListener('keydown', this.specialInputEvents);
-    this.addButton.removeEventListener('click', this.addStream);
-  }
+class SearchSection extends React.Component {  
   onInputChange = () => {
     const enteredString = document.getElementById('searchChannel').value;
     if (enteredString.includes(' ')) {
@@ -33,9 +22,13 @@ class SearchSection extends React.Component {
   errorHandler = (enteredString, platform) => {
     const enteredStringLowerCase = enteredString.toLowerCase();
     const link = window.location.hash.toLowerCase();
-    if (enteredString.length <= 1) return 'Channel name must be at least 2 charakters long';
-    if (this.props.openedStreams > 7) return 'You cannot open more than 8 streams... sorry!';
-    if (link.includes(enteredStringLowerCase))
+    if (enteredString.length <= 1) {
+      return 'Channel name must be at least 2 charakters long';
+    }
+    if (this.props.openedStreams > 7) {
+      return 'You cannot open more than 8 streams... sorry!';
+    }
+    if (link.includes(enteredStringLowerCase)) {
       return link.split('#').reduce((value, stream) => {
         const streamName = stream.slice(0, stream.indexOf('('));
         const streamPlatform = stream.slice(stream.indexOf('(') + 1, stream.length - 1);
@@ -44,6 +37,7 @@ class SearchSection extends React.Component {
         }
         return value;
       });
+    }
     return '';
   };
 
@@ -67,12 +61,6 @@ class SearchSection extends React.Component {
     this.props.openIt();
   };
 
-  specialInputEvents = e => {
-    if (e.keyCode === 13) {
-      this.addStream();
-    }
-  };
-
   render() {
     return (
       <SearchInputWrapper>
@@ -82,21 +70,23 @@ class SearchSection extends React.Component {
           <option value="sc">Smashcast</option>
           <option value="m">Mixer</option>
         </select>
-        <input id="searchChannel" placeholder="Enter channel name/ID..." />
-        <p
-          ref={p => {
-            this.addButton = p;
-          }}
-        >
+        <input 
+          id="searchChannel" 
+          placeholder="Enter channel name/ID..."
+          onKeyDown={(event) => enterPressEvent(event, this.addStream)}
+          onChange={this.onInputChange}
+
+        />
+        <SearchIconButton onClick={this.addStream}>
           <svg viewBox="0 0 32 32">
             <circle cx="12" cy="12" r="11" />
             <line x1="20" x2="31" y1="20" y2="31" />
           </svg>
-        </p>
+        </SearchIconButton>
       </SearchInputWrapper>
     );
-  }
-}
+  };
+};
 
 SearchSection.propTypes = {
   openedStreams: PropTypes.number.isRequired,
@@ -107,7 +97,7 @@ SearchSection.propTypes = {
 
 function mapStateToProps({ openedStreams }) {
   return { openedStreams };
-}
+};
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -121,6 +111,6 @@ function mapDispatchToProps(dispatch) {
       dispatch({ type: 'TOPBAR - TOGGLE' });
     }
   };
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchSection);

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 const TopBarWrapper = styled.header`
   position: relative;
   top: 0px;
-  height: 48px;
+  height: 50px;
   width: 100%;
   display: flex;
   justify-content: space-around;
@@ -11,25 +11,22 @@ const TopBarWrapper = styled.header`
   transition-duration: 0.8s;
   background-color: #517edb;
   border-bottom: 2px solid #2350a9;
+  box-sizing: border-box;
   z-index: 100;
+`;
 
-  span {
-    white-space: nowrap;
-    color: #ffffff;
-    font-size: 24px;
-    font-weight: bold;
-    text-shadow: 1px 1px 3px #333333;
-    transition-duration: 0.4s;
-  }
+const LogoAndOptionsWrapper = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `;
 
 const Logo = styled.div`
-  margin-top: 30px;
-  width: 110px;
+  margin-top: 10px;
+  width: 120px;
   height: 60px;
-  padding: 5px;
-  transition-duration: 0.8s;
-  transform: perspective(10px) rotateX(-3deg);
+  transition-duration: 0.2s;
   background-color: #517edb;
   border: 2px solid #2350a9;
   z-index: 10;
@@ -40,131 +37,43 @@ const Logo = styled.div`
   }
 
   img {
-    position: absolute;
-    height: 60px;
-    top: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-    transform: perspective(10px) rotateX(3deg);
+    display: block;
+    margin: 0 auto;
+    padding: 5px 0;
+    height: 50px;
+    width: 100px;
   }
 `;
 
 const Stripe = styled.div`
-  position: absolute;
-  top: 28px;
+  position: relative;
   height: 50px;
   width: 45px;
   padding: 5px;
-  transform: skew(-18deg);
   border-right: 1px solid #2350a9;
   box-sizing: border-box;
-  transition-duration: 0.8s;
+`;
 
-  div {
-    padding: 3px;
-    transform: skew(18deg);
-  }
+const OptionsButton = styled.button`
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: none;
+  color: inherit;
+  border: none;
+  cursor: pointer;
+  outline: inherit;
+  transition-duration: 0.2s;
 
   &:hover {
     background-color: #7199ed;
     cursor: pointer;
   }
-
-  &:hover #dropDown {
-    opacity: 1;
-    visibility: visible;
-  }
-`;
-
-const OptionsMenuWrapper = styled.div`
-  position: absolute;
-  margin-top: 7px;
-  margin-left: 22px;
-  background-color: #f1f1f1;
-  width: 200px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  transition-duration: 0.3s;
-  visibility: hidden;
-  opacity: 0;
-
-  p {
-    position: relative;
-    color: black;
-    padding: 12px 6px;
-    text-decoration: none;
-    display: block;
-    border-bottom: 1px outset #999999;
-
-    &:hover {
-      background-color: #7199ed;
-    }
-
-    label {
-      cursor: pointer;
-    }
-
-    select {
-      cursor: pointer;
-      display: block;
-      margin: auto;
-      margin-top: 5px;
-      padding: 3px 5px;
-      height: 26px;
-      width: 100%;
-      box-sizing: border-box;
-      background-color: #eeeeee;
-      outline: none;
-    }
-
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-
-  .switchBox {
-    font-size: inherit;
-    color: inherit;
-    font-weight: inherit;
-    text-shadow: none;
-    display: block;
-  }
-
-  input[type='checkbox'].switch {
-    -webkit-appearance: none;
-    float: right;
-    width: 35px;
-    height: 19px;
-    background: #ddd;
-    position: relative;
-    outline: none;
-    cursor: pointer;
-    transition-duration: 0.5s;
-  }
-
-  input[type='checkbox'].switch:checked {
-    background-color: #0ebeff;
-  }
-
-  input[type='checkbox'].switch:after {
-    position: absolute;
-    content: '';
-    width: 15px;
-    height: 15px;
-    background-color: #ffffff;
-    box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
-    left: 3px;
-    top: 2px;
-    transition-duration: 0.5s;
-  }
-
-  input[type='checkbox'].switch:checked:after {
-    left: calc(100% - 17px);
-  }
 `;
 
 const SearchInputWrapper = styled.div`
-  transition-duration: 0.4s;
   white-space: nowrap;
   margin-right: 50px;
 
@@ -188,17 +97,25 @@ const SearchInputWrapper = styled.div`
     border: 1px solid #444444;
     border-right: 0;
   }
-
-  p {
-    position: absolute;
-    display: inline;
-    height: 26px;
-    width: 26px;
-    box-sizing: border-box;
-    background-color: #ffffff;
-    border: 1px solid #444444;
-    border-left: none;
-  }
 `;
 
-export { TopBarWrapper, Logo, Stripe, OptionsMenuWrapper, SearchInputWrapper };
+const SearchIconButton = styled.button`
+  position: absolute;
+  height: 26px;
+  width: 26px;
+  padding: 0px 2px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  border: 1px solid #444444 !important;
+  border-left: none !important;
+`;
+
+export {
+  TopBarWrapper,
+  LogoAndOptionsWrapper,
+  Logo,
+  Stripe,
+  OptionsButton,
+  SearchInputWrapper,
+  SearchIconButton
+};

@@ -10,27 +10,27 @@ const Chat = props => {
     selectedChannelName.indexOf(',') + 1,
     selectedChannelName.length
   );
+  // Platforms:
+  const smashcast = 'sc';
+  const mixer = 'm';
 
   let link = `https://www.twitch.tv/embed/${streamName}/chat?darkpopout`;
-  if (streamPlatform === 'sc') {
+  if (streamPlatform === smashcast) {
     link = `https://www.smashcast.tv/embed/chat/${streamName}?autoconnect=true`;
-  } else if (streamPlatform === 'm') {
+  } else if (streamPlatform === mixer) {
     link = `https://mixer.com/embed/chat/${streamName}`;
   }
 
-  if (streamName) {
-    return (
-      <iframe
-        title={`${streamName}${streamPlatform}`}
-        src={link}
-        frameBorder="0"
-        height="100%"
-        width="100%"
-        onLoad={() => isLoading(false)}
-      />
-    );
-  }
-  return (
+  return streamName ? (
+    <iframe
+      title={`${streamName}${streamPlatform}`}
+      src={link}
+      frameBorder="0"
+      height="100%"
+      width="100%"
+      onLoad={() => isLoading(false)}
+    />
+  ) : (
     <ChatErrorWrapper>
       <iframe title="justLoad" onLoad={() => isLoading(false)} />
       <p>

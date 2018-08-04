@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 
 import MoveResizeButtons from './VideoMenuMoveResize';
 import PinCloseButtons from './VideoMenuPinClose';
-import { VideoMenuWrapper } from './styled/VideoMenu';
+import { 
+  VideoMenuWrapper, 
+  VideoMenuBackground,
+  VideoMenuChannelNameWrapper
+} from './styled/VideoMenu';
 
 class VideoMenu extends React.Component {
   constructor(props) {
@@ -17,15 +21,22 @@ class VideoMenu extends React.Component {
       initialState = cachedState;
     }
     this.state = initialState;
-  }
-  shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.parentState.isPinned !== nextProps.parentState.isPinned) return true;
-    if (this.state.menuVisibility !== nextState.menuVisibility) return true;
-    if (this.props.channelName !== nextProps.channelName) return true;
-    return false;
-  }
+  };
 
-  changeMenuVisibility = () => {
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.props.parentState.isPinned !== nextProps.parentState.isPinned) {
+      return true;
+    }
+    if (this.state.menuVisibility !== nextState.menuVisibility) {
+      return true;
+    }
+    if (this.props.channelName !== nextProps.channelName) {
+      return true;
+    } 
+    return false;
+  };
+
+  toggleMenuVisibility = () => {
     if (this.state.menuOpacity === 1) {
       const { enteredName } = this.props;
       document.getElementById(`stream${enteredName}`).style.pointerEvents = 'auto';
@@ -52,19 +63,18 @@ class VideoMenu extends React.Component {
     localStorage.setItem(`${enteredName}MenuState`, JSON.stringify(this.state));
 
     return (
-      <VideoMenuWrapper style={{ opacity: menuOpacity, zIndex: 150 }}>
-        <div id="barBackground">
+      <VideoMenuWrapper style={{ opacity: menuOpacity }}>
+        <VideoMenuBackground>
           {!parentState.isPinned && (
             <MoveResizeButtons menuVisibility={menuVisibility} enteredName={enteredName} />
           )}
-          <span
+          <VideoMenuChannelNameWrapper
             style={spanStyle}
-            onClick={this.changeMenuVisibility}
-            onKeyDown={this.changeMenuVisibility}
+            onClick={this.toggleMenuVisibility}
             role="presentation"
           >
             {channelName.charAt(0).toUpperCase() + channelName.slice(1)}
-          </span>
+          </VideoMenuChannelNameWrapper>
           <PinCloseButtons
             menuVisibility={menuVisibility}
             grandParentState={parentState}
@@ -72,11 +82,11 @@ class VideoMenu extends React.Component {
             zIndex={this.props.zIndex}
             setGrandParentState={this.props.setParentState}
           />
-        </div>
+        </VideoMenuBackground>
       </VideoMenuWrapper>
     );
-  }
-}
+  };
+};
 
 VideoMenu.propTypes = {
   parentState: PropTypes.shape({

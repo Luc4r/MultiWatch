@@ -3,27 +3,28 @@ import styled from 'styled-components';
 const VideoMenuWrapper = styled.div`
   position: relative;
   transition-duration: 0.3s;
+  z-index: 150;
+`;
 
-  #barBackground {
-    background: linear-gradient(rgb(0, 0, 0) 50%, rgba(0, 0, 0, 0));
-    width: 100%;
-    height: 70px;
-  }
+const VideoMenuBackground = styled.div`
+  background: linear-gradient(rgb(0, 0, 0) 50%, rgba(0, 0, 0, 0));
+  width: 100%;
+  height: 70px;
+`;
 
-  span {
-    float: left;
-    height: 40px;
-    text-align: center;
-    line-height: 25px;
-    color: #ffffff;
-    cursor: pointer;
-    background: linear-gradient(rgb(81, 126, 219), rgba(0, 0, 0, 0));
+const VideoMenuChannelNameWrapper = styled.h3`
+  float: left;
+  height: 40px;
+  text-align: center;
+  line-height: 25px;
+  color: #ffffff;
+  cursor: pointer;
+  background: linear-gradient(rgb(81, 126, 219), rgba(0, 0, 0, 0));
 
-    word-wrap: break-word;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
+  word-wrap: break-word;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 `;
 
 const VideoMenuButton = styled.div`
@@ -64,4 +65,10 @@ const VideoMenuMoveResizeWrapper = styled.div`
   }
 `;
 
-export { VideoMenuWrapper, VideoMenuMoveResizeWrapper, VideoMenuButton };
+export { 
+  VideoMenuWrapper, 
+  VideoMenuBackground,
+  VideoMenuChannelNameWrapper,
+  VideoMenuButton,
+  VideoMenuMoveResizeWrapper 
+};

@@ -48,6 +48,9 @@ const mainReducer = (state, action) => {
     case 'CHAT - TOGGLE':
       newState = { ...state, showChat: !state.showChat };
       break;
+    case 'DARKMODE - TOGGLE':
+      newState = { ...state, darkMode: !state.darkMode };
+      break;
     case 'STORE - CHANGE STATE':
       newState = action.state;
       break;

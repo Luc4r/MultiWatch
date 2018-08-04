@@ -16,7 +16,8 @@ class MoveAndResize extends React.Component {
       this.changeVideoPosition();
       this.changeVideoSizes();
     }
-  }
+  };
+
   shouldComponentUpdate(nextProps) {
     if (this.props.videoLayout !== nextProps.videoLayout) {
       setTimeout(() => {
@@ -25,7 +26,7 @@ class MoveAndResize extends React.Component {
       });
     }
     return true;
-  }
+  };
 
   getStoragedProperties = stream => {
     let { left, top, width, height } = JSON.parse(localStorage.getItem(`${stream}Properties`));
@@ -235,8 +236,8 @@ class MoveAndResize extends React.Component {
         </VideoMenuButton>
       </div>
     );
-  }
-}
+  };
+};
 
 MoveAndResize.propTypes = {
   menuVisibility: PropTypes.string.isRequired,
@@ -276,10 +277,10 @@ function mapDispatchToProps(dispatch) {
       dispatch({ type: 'CHAT - TOGGLE' });
     }
   };
-}
+};
 
 function mapStateToProps({ openedStreams, pinnedStreams, pinnedStreamNames, videoLayout }) {
   return { openedStreams, pinnedStreams, pinnedStreamNames, videoLayout };
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(MoveAndResize);

@@ -7,7 +7,7 @@ class MoveAndResize extends React.Component {
   constructor() {
     super();
     this.lastClick = 'none';
-  }
+  };
 
   checkboxClick = () => {
     const { lastClick } = this;
@@ -73,8 +73,8 @@ class MoveAndResize extends React.Component {
         </label>
       </VideoMenuMoveResizeWrapper>
     );
-  }
-}
+  };
+};
 
 MoveAndResize.propTypes = {
   menuVisibility: PropTypes.string.isRequired,

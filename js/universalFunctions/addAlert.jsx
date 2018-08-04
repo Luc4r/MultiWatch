@@ -11,7 +11,8 @@ const changeAlertCount = message => {
 
 const changeAlertBackground = message => {
   const alertElement = document.getElementById(message);
-  const bgColor = alertElement.style.backgroundColor;
+  const alertBGColor = alertElement.style.backgroundColor;
+  const bgColor = alertBGColor ? alertBGColor : 'rgba(84,84,84, 0.85)';
   const newRed = parseInt(bgColor.slice(bgColor.indexOf('(') + 1, bgColor.indexOf(',')), 10) + 20;
   if (newRed < 220) {
     const newBg = `rgba(${newRed},${bgColor.slice(bgColor.indexOf(',') + 1, bgColor.length)}`;

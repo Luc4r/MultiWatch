@@ -11,7 +11,11 @@ const AlertBox = props => {
     .filter(alert => alert)
     .map((alert, i) => <Alert key={alert} alertIndex={i} alertMessage={alert} />);
 
-  return <AlertBoxWrapper>{alerts}</AlertBoxWrapper>;
+  return (
+    <AlertBoxWrapper>
+      {alerts}
+    </AlertBoxWrapper>
+  );
 };
 
 AlertBox.propTypes = {
@@ -20,6 +24,6 @@ AlertBox.propTypes = {
 
 function mapStateToProps({ alertMessages }) {
   return { alertMessages };
-}
+};
 
 export default connect(mapStateToProps)(AlertBox);
