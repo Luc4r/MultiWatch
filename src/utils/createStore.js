@@ -32,6 +32,6 @@ const createCustomStore = (streamsNoDuplicates) => {
   const store = createStore(reducer, initialStoreState);
 
   return {store, initialStoreState, cachedStoreState};
-}
+};
 
 export default createCustomStore;

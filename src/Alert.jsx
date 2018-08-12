@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import getAdditionalHeight from './utils/getAdditionalHeight';
 import { 
   AlertWrapper,
   AlertMessageWrapper,
@@ -22,15 +23,14 @@ class Alert extends React.Component {
     setTimeout(() => {
       const newTop = this.getTopMargin();
       this.setState({ top: newTop });
-    });
+    }); // wait for props update
     setTimeout(() => {
       this.props.removeAlert(this.props.alertMessage);
-    }, 5800);
+    }, 5800); // 5s bar animation + 0.8s opacity transition
   };
 
   getTopMargin() {
-    let additionalHeight = 60;
-    if (this.props.isTopBarHidden === true) additionalHeight = 10;
+    const additionalHeight = getAdditionalHeight(this.props.isTopBarHidden) + 10;
     return this.props.alertIndex * 130 + additionalHeight;
   };
 
@@ -57,8 +57,8 @@ class Alert extends React.Component {
 Alert.propTypes = {
   alertMessage: PropTypes.string.isRequired,
   alertIndex: PropTypes.number.isRequired,
-  removeAlert: PropTypes.func.isRequired,
-  isTopBarHidden: PropTypes.bool.isRequired
+  isTopBarHidden: PropTypes.bool.isRequired,
+  removeAlert: PropTypes.func.isRequired
 };
 
 function mapDispatchToProps(dispatch) {

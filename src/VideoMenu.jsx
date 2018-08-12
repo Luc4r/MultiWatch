@@ -16,7 +16,7 @@ class VideoMenu extends React.Component {
       menuOpacity: 1,
       menuVisibility: 'visible'
     };
-    const cachedState = JSON.parse(localStorage.getItem(`${props.enteredName}MenuState`));
+    const cachedState = JSON.parse(localStorage.getItem(`${props.videoElementId}MenuState`));
     if (initialState !== cachedState && cachedState !== null) {
       initialState = cachedState;
     }
@@ -27,7 +27,7 @@ class VideoMenu extends React.Component {
     if (this.props.parentState.isPinned !== nextProps.parentState.isPinned) {
       return true;
     }
-    if (this.state.menuVisibility !== nextState.menuVisibility) {
+    if (this.state !== nextState) {
       return true;
     }
     if (this.props.channelName !== nextProps.channelName) {
@@ -38,10 +38,10 @@ class VideoMenu extends React.Component {
 
   toggleMenuVisibility = () => {
     if (this.state.menuOpacity === 1) {
-      const { enteredName } = this.props;
-      document.getElementById(`stream${enteredName}`).style.pointerEvents = 'auto';
-      const moveCheckbox = document.getElementById(`move${enteredName}`);
-      const sizeCheckbox = document.getElementById(`size${enteredName}`);
+      const { videoElementId } = this.props;
+      document.getElementById(`stream${videoElementId}`).style.pointerEvents = 'auto';
+      const moveCheckbox = document.getElementById(`move${videoElementId}`);
+      const sizeCheckbox = document.getElementById(`size${videoElementId}`);
       if (!this.props.parentState.isPinned) {
         moveCheckbox.checked = false;
         sizeCheckbox.checked = false;
@@ -53,20 +53,21 @@ class VideoMenu extends React.Component {
   };
 
   render() {
+    const { channelName, videoElementId, parentState } = this.props;
     const { menuOpacity, menuVisibility } = this.state;
-    const { channelName, enteredName, parentState } = this.props;
-
-    let spanStyle = { width: 'calc(100% - 168px)' };
-    if (parentState.isPinned) {
-      spanStyle = { width: 'calc(100% - 84px)' };
-    }
-    localStorage.setItem(`${enteredName}MenuState`, JSON.stringify(this.state));
+    const spanStyle = parentState.isPinned
+      ? { width: 'calc(100% - 84px)' }
+      : { width: 'calc(100% - 168px)' };
+    localStorage.setItem(`${videoElementId}MenuState`, JSON.stringify(this.state));
 
     return (
       <VideoMenuWrapper style={{ opacity: menuOpacity }}>
         <VideoMenuBackground>
           {!parentState.isPinned && (
-            <MoveResizeButtons menuVisibility={menuVisibility} enteredName={enteredName} />
+            <MoveResizeButtons 
+              menuVisibility={menuVisibility} 
+              videoElementId={videoElementId} 
+            />
           )}
           <VideoMenuChannelNameWrapper
             style={spanStyle}
@@ -78,7 +79,7 @@ class VideoMenu extends React.Component {
           <PinCloseButtons
             menuVisibility={menuVisibility}
             grandParentState={parentState}
-            enteredName={enteredName}
+            videoElementId={videoElementId}
             zIndex={this.props.zIndex}
             setGrandParentState={this.props.setParentState}
           />
@@ -93,7 +94,7 @@ VideoMenu.propTypes = {
     isPinned: PropTypes.bool
   }).isRequired,
   channelName: PropTypes.string.isRequired,
-  enteredName: PropTypes.string.isRequired,
+  videoElementId: PropTypes.string.isRequired,
   zIndex: PropTypes.number.isRequired,
   setParentState: PropTypes.func.isRequired
 };

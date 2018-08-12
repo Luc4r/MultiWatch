@@ -4,19 +4,22 @@ import Video from './Video';
 import getStreamNames from './utils/getStreamNames';
 
 const VideoList = () => {
-  const videos = getStreamNames()
-    .filter(video => video)
-    .map((video, i) => (
+  const videos = getStreamNames().map((stream, i) => {
+    const { channelName, platform } = stream;
+    return (
       <Video
-        key={`${video[0]}(${video[1]})`}
-        channelName={video[0]}
-        platform={video[1]}
+        key={`${channelName}(${platform})`}
+        channelName={channelName}
+        platform={platform}
         zIndex={i + 1}
       />
-    ));
+    );
+  });
 
   return (
-    <div>{videos}</div>
+    <div>
+      {videos}
+    </div>
   );
 };
 

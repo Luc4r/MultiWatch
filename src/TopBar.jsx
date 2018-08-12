@@ -1,7 +1,9 @@
-import React, { Component, Fragment } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import OptionsMenu from './TopBarOptionsMenu';
+import SearchSection from './TopBarSearchSection';
 import { 
   TopBarWrapper, 
   LogoAndOptionsWrapper, 
@@ -9,24 +11,20 @@ import {
   Stripe,
   OptionsButton 
 } from './styled/TopBar';
-import OptionsMenu from './TopBarOptionsMenu';
-import SearchSection from './TopBarSearchSection';
 import logo from '../assets/Logo.png';
 import GearIcon from './utils/svg-icons/gear';
 
-class TopBar extends Component {
+class TopBar extends React.Component {
   componentDidMount() {
     const topBarElement = document.getElementById('topBar');
-    if (this.props.isTopBarHidden) topBarElement.style.top = '-50px';
+    if (this.props.isTopBarHidden) {
+      topBarElement.style.top = '-50px';
+    } 
   };
 
   toggleTopBarVisibility = () => {
     const topBarElement = document.getElementById('topBar');
-    if (!this.props.isTopBarHidden) {
-      topBarElement.style.top = '-50px';
-    } else {
-      topBarElement.style.top = '0px';
-    }
+    topBarElement.style.top = this.props.isTopBarHidden ? '0px' : '-50px';
     this.props.toggleTopBar();
   };
 
@@ -42,6 +40,8 @@ class TopBar extends Component {
   };
 
   render() {
+    const { isTopBarHidden } = this.props;
+
     return (
       <TopBarWrapper id="topBar">
         <LogoAndOptionsWrapper>
@@ -52,7 +52,7 @@ class TopBar extends Component {
             <OptionsButton onClick={this.toggleMenuVisibility}>
               <GearIcon />
             </OptionsButton>
-            {!this.props.isTopBarHidden && (
+            {!isTopBarHidden && (
               <OptionsMenu />
             )}
           </Stripe>

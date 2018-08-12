@@ -13,10 +13,10 @@ class MoveAndResize extends React.Component {
 
   checkboxClick = () => {
     const { lastClick } = this;
-    const { enteredName } = this.props;
-    const moveCheckbox = document.getElementById(`move${enteredName}`);
-    const sizeCheckbox = document.getElementById(`size${enteredName}`);
-    const stream = document.getElementById(`stream${enteredName}`);
+    const { videoElementId } = this.props;
+    const moveCheckbox = document.getElementById(`move${videoElementId}`);
+    const sizeCheckbox = document.getElementById(`size${videoElementId}`);
+    const stream = document.getElementById(`stream${videoElementId}`);
     if (moveCheckbox.checked && (lastClick === 'size' || lastClick === 'none')) {
       stream.style.pointerEvents = 'none';
       this.lastClick = 'move';
@@ -34,26 +34,26 @@ class MoveAndResize extends React.Component {
   };
 
   render() {
-    const { enteredName, menuVisibility } = this.props;
+    const { videoElementId, menuVisibility } = this.props;
 
     return (
       <VideoMenuMoveResizeWrapper style={{ visibility: menuVisibility }}>
-        <label htmlFor={`move${enteredName}`} className="labl">
+        <label htmlFor={`move${videoElementId}`} className="labl">
           <input
             type="radio"
-            name={enteredName}
-            id={`move${enteredName}`}
+            name={videoElementId}
+            id={`move${videoElementId}`}
             onClick={this.checkboxClick}
           />
           <VideoMenuButton style={{ marginRight: '2px' }}>
             <MoveIcon />
           </VideoMenuButton>
         </label>
-        <label htmlFor={`size${enteredName}`} className="labl">
+        <label htmlFor={`size${videoElementId}`} className="labl">
           <input
             type="radio"
-            name={enteredName}
-            id={`size${enteredName}`}
+            name={videoElementId}
+            id={`size${videoElementId}`}
             onClick={this.checkboxClick}
           />
           <VideoMenuButton style={{ marginRight: '2px' }}>
@@ -67,7 +67,7 @@ class MoveAndResize extends React.Component {
 
 MoveAndResize.propTypes = {
   menuVisibility: PropTypes.string.isRequired,
-  enteredName: PropTypes.string.isRequired
+  videoElementId: PropTypes.string.isRequired
 };
 
 export default MoveAndResize;

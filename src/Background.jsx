@@ -1,23 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-
 import Triangulr from 'triangulr';
+
 import { BackgroundWrapper } from './styled/Background';
 
 class Background extends React.Component {
-  componentDidMount() {
-    this.generateSVGBackground(this.props.darkMode);
-  };
-  
-  shouldComponentUpdate(nextProps) {
-    this.changeSVGBackground(nextProps.darkMode);   
-    return true;
-  };
-
-  changeSVGBackground = (darkMode) => {
-    this.removeSVGBackground();
-    this.generateSVGBackground(darkMode);
+  getBackgroundColor = () => {
+    const { darkMode } = this.props;
+    return darkMode ? '#232323' : '#cccccc';
   };
 
   lightColorGenerator = (path) => {
@@ -30,7 +21,7 @@ class Background extends React.Component {
     code = code.toString(16);
     return `#${code}${code}${code}`;
   };
-
+  
   darkColorGenerator = () => {
     const randomMax = 64;
     const randomMin = 0;
@@ -40,38 +31,43 @@ class Background extends React.Component {
     return `#${finalCode}${finalCode}${finalCode}`;
   };
 
+  changeSVGBackground = (darkMode) => {
+    if (document.getElementById('backgroundSVG')) {
+      this.removeSVGBackground();
+    }
+    this.generateSVGBackground(darkMode);
+  };
+
   generateSVGBackground = (darkMode) => {
-    const colorGenFunction = darkMode 
+    const colorGeneratorFunction = darkMode 
       ? this.darkColorGenerator 
       : this.lightColorGenerator;
-    const mySVG = new Triangulr (2000, 2000, 222, 111, colorGenFunction);
-    mySVG.id = 'backgroundSVG';
-    mySVG.style.transitionDuration = '0.2s';
-    mySVG.style.opacity = 0;
+    const SVGBackground = new Triangulr (2000, 2000, 222, 111, colorGeneratorFunction);
+    SVGBackground.id = 'backgroundSVG';
+    SVGBackground.style.transitionDuration = '0.2s';
+    SVGBackground.style.opacity = 0;
     setTimeout(() => {
-      document.getElementById('background').appendChild(mySVG);
-    }, 200)
+      document.getElementById('background').appendChild(SVGBackground);
+    }, 200); // 0.2s opacity transition
     setTimeout(() => {
       document.getElementById('backgroundSVG').style.opacity = 1;
-    }, 250);
+    }, 250); // 0.2s opacity transition + 0.05s render delay
   };
 
   removeSVGBackground = () => {
-    const { darkMode } = this.props;
-    const backgroundColor = !darkMode 
-      ? '#232323' 
-      : '#cccccc';
-    document.getElementById('background').style.background = backgroundColor;
-    document.getElementById('backgroundSVG').style.opacity = 0;
+    const elementToRemove = document.getElementById('backgroundSVG');
+    elementToRemove.style.opacity = 0;
     setTimeout(() => {
-      const elementToRemove = document.getElementById('backgroundSVG');
       document.getElementById('background').removeChild(elementToRemove);
-    }, 200);
+    }, 200); // 0.2s opacity transition
   };
 
   render() {  
+    const backgroundColor = this.getBackgroundColor();
+    this.changeSVGBackground(this.props.darkMode);
+    
     return (
-      <BackgroundWrapper id="background" />
+      <BackgroundWrapper id="background" style={{ backgroundColor }} />
     );
   };
 };

@@ -9,12 +9,24 @@ import {
   OptionsMenuCheckboxWrapper
 } from './styled/TopBarOptionsMenu';
 
-const OptionsMenu = props => {
-  const toggleChat = () => props.toggleChat();
+class OptionsMenu extends React.Component {
+  handleClick = e => {
+    const clickedElement = e.target;
+    if (clickedElement.id === "toggleChat") {
+      this.props.toggleChat();
+    } else if (clickedElement.id === "toggleDarkMode") {
+      this.props.toggleDarkMode();
+    }
+    clickedElement.setAttribute("disabled", "disabled");
+    setTimeout(() => {
+      clickedElement.removeAttribute("disabled");
+    }, 800);  // 0.8s delay to prevent spamming
+  };
 
-  const toggleDarkMode = () => props.toggleMode();
-
-  return (
+  render() {
+    const { showChat, darkMode } = this.props;
+    
+    return (
       <OptionsMenuWrapper id="optionsDropdown">
         <OptionsMenuOptionWrapper>
           <OptionsMenuCheckboxWrapper htmlFor="toggleChat">
@@ -23,8 +35,8 @@ const OptionsMenu = props => {
               type="checkbox"
               className="switch"
               id="toggleChat"
-              defaultChecked={props.showChat}
-              onClick={toggleChat}
+              defaultChecked={showChat}
+              onClick={this.handleClick}
             />
           </OptionsMenuCheckboxWrapper>
         </OptionsMenuOptionWrapper>
@@ -35,8 +47,8 @@ const OptionsMenu = props => {
               type="checkbox"
               className="switch"
               id="toggleDarkMode"
-              defaultChecked={props.darkMode}
-              onClick={toggleDarkMode}
+              defaultChecked={darkMode}
+              onClick={this.handleClick}
             />
           </OptionsMenuCheckboxWrapper>
         </OptionsMenuOptionWrapper>
@@ -44,18 +56,19 @@ const OptionsMenu = props => {
           <TopBarOptionsLayoutSelect />
         </OptionsMenuOptionWrapper>
       </OptionsMenuWrapper>
-  );
+    );
+  };
 };
 
 OptionsMenu.propTypes = {
   showChat: PropTypes.bool.isRequired,
   darkMode: PropTypes.bool.isRequired,
   toggleChat: PropTypes.func.isRequired,
-  toggleMode: PropTypes.func.isRequired
+  toggleDarkMode: PropTypes.func.isRequired
 };
 
-function mapStateToProps({ showChat, videoLayout, darkMode }) {
-  return { showChat, videoLayout, darkMode };
+function mapStateToProps({ showChat, darkMode }) {
+  return { showChat, darkMode };
 };
 
 function mapDispatchToProps(dispatch) {
@@ -63,7 +76,7 @@ function mapDispatchToProps(dispatch) {
     toggleChat: () => {
       dispatch({ type: 'CHAT - TOGGLE' });
     },
-    toggleMode: () => {
+    toggleDarkMode: () => {
       dispatch({ type: 'DARKMODE - TOGGLE' });
     }
   };

@@ -97,15 +97,6 @@ const TopBarOptionsSelectWrapper = styled.p`
     width: 14px;
     height: 14px;
   }
-
-  #layoutDropdown {
-    opacity: 0;
-    padding: 0;
-    height: 0px;
-    visibility: hidden;
-    transition: visibility 200s, opacity 500ms, height 500ms;
-    overflow-y: hidden;
-  }
 `;
 
 const VideosLayoutTitleWrapper = styled.div`
@@ -118,6 +109,15 @@ const VideosLayoutTitleWrapper = styled.div`
   font-weight: initial;
   text-shadow: none;
   font-size: 16px;
+`;
+
+const VideosLayoutDropdownWrapper = styled.div`
+  opacity: 0;
+  padding: 0;
+  height: 0px;
+  visibility: hidden;
+  transition: visibility 200s, opacity 500ms, height 500ms;
+  overflow-y: hidden;
 `;
 
 const VideosLayoutOption = styled.label`
@@ -179,6 +179,7 @@ export {
   OptionsMenuCheckboxWrapper,
   TopBarOptionsSelectWrapper,
   VideosLayoutTitleWrapper,
+  VideosLayoutDropdownWrapper,
   VideosLayoutOption,
   VideosLayoutDescription,
   VideosLayoutCurrentWrapper

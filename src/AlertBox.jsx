@@ -5,11 +5,13 @@ import PropTypes from 'prop-types';
 import Alert from './Alert';
 import { AlertBoxWrapper } from './styled/AlertBox';
 
-const AlertBox = props => {
-  const alerts = props.alertMessages
+const AlertBox = ({ alertMessages }) => {
+  const alerts = alertMessages
     .split(';')
     .filter(alert => alert)
-    .map((alert, i) => <Alert key={alert} alertIndex={i} alertMessage={alert} />);
+    .map((alert, i) =>
+      <Alert key={alert} alertIndex={i} alertMessage={alert} />
+    );
 
   return (
     <AlertBoxWrapper>

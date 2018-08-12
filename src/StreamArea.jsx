@@ -6,10 +6,10 @@ import ChatBox from './ChatBox';
 import VideoList from './VideoList';
 import { ContentAreaWrapper, VideoAreaWrapper } from './styled/StreamArea';
 
-const StreamArea = props => {
+const StreamArea = ({ isTopBarHidden, openedStreams }) => {
   let height = '100%';
   let marginTop = '-50px';
-  if (!props.isTopBarHidden) {
+  if (!isTopBarHidden) {
     height = 'calc(100% - 50px)';
     marginTop = '0px';
   }
@@ -17,10 +17,10 @@ const StreamArea = props => {
   return (
     <ContentAreaWrapper style={{ height, marginTop }}>
       <VideoAreaWrapper id="videoArea">
-        <VideoList openedStreams={props.openedStreams} />
+        <VideoList openedStreams={openedStreams} />
       </VideoAreaWrapper>
-      {props.openedStreams > 0 && (
-        <ChatBox openedStreams={props.openedStreams} />
+      {openedStreams > 0 && (
+        <ChatBox openedStreams={openedStreams} />
       )}
     </ContentAreaWrapper>
   );

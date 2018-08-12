@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import {
   TopBarOptionsSelectWrapper, 
   VideosLayoutTitleWrapper,
+  VideosLayoutDropdownWrapper,
   VideosLayoutOption,
   VideosLayoutDescription,
   VideosLayoutCurrentWrapper
@@ -20,10 +21,11 @@ class TopBarOptionsLayoutSelect extends React.Component {
   };
 
   handleClick = e => {
-    const newValue = e.target.id;
-    if (newValue !== this.props.videoLayout) {
-      this.props.changeLayout(newValue);
-    } 
+    const newVideoLayout = e.target.id;
+    if (newVideoLayout !== this.props.videoLayout) {
+      this.props.changeLayout(newVideoLayout);
+    }
+    this.toggleDropdownVisibility(); 
   };
 
   toggleDropdownVisibility = () => {
@@ -43,6 +45,7 @@ class TopBarOptionsLayoutSelect extends React.Component {
 
   render() {
     const { videoLayout } = this.props;
+    const { isDropdownHidden } = this.state;
 
     return (
       <TopBarOptionsSelectWrapper 
@@ -54,12 +57,12 @@ class TopBarOptionsLayoutSelect extends React.Component {
           <ArrowDownIcon />
         </VideosLayoutTitleWrapper>
 
-        {this.state.isDropdownHidden === true && (
+        {isDropdownHidden === true && (
           <VideosLayoutCurrentWrapper>
             Current: {videoLayout.slice(0, 1).toUpperCase() + videoLayout.slice(1)}
           </VideosLayoutCurrentWrapper>
         )}
-        <div id="layoutDropdown">
+        <VideosLayoutDropdownWrapper id="layoutDropdown">
           <VideosLayoutOption htmlFor="default">
             <input
               type="radio"
@@ -90,7 +93,7 @@ class TopBarOptionsLayoutSelect extends React.Component {
             />
             <VideosLayoutDescription>Vertical</VideosLayoutDescription>
           </VideosLayoutOption>
-        </div>
+        </VideosLayoutDropdownWrapper>
       </TopBarOptionsSelectWrapper>
     );
   };

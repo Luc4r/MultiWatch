@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 
 import { ChatErrorWrapper } from './styled/ChatBox';
 
-const Chat = props => {
-  const { selectedChannelName, isLoading } = props;
+const Chat = ({ selectedChannelName, isLoading }) => {
   const streamName = selectedChannelName.slice(0, selectedChannelName.indexOf(','));
   const streamPlatform = selectedChannelName.slice(
     selectedChannelName.indexOf(',') + 1,
@@ -13,7 +12,6 @@ const Chat = props => {
   // Platforms:
   const smashcast = 'sc';
   const mixer = 'm';
-
   let link = `https://www.twitch.tv/embed/${streamName}/chat?darkpopout`;
   if (streamPlatform === smashcast) {
     link = `https://www.smashcast.tv/embed/chat/${streamName}?autoconnect=true`;

@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { enterPressEvent } from './utils/eventHandlers';
 import { SearchInputWrapper, SearchIconButton } from './styled/TopBar';
 import SearchIcon from './utils/svg-icons/search';
 
@@ -46,20 +45,31 @@ class SearchSection extends React.Component {
     // TO DO: same youtube channel - entered ID and NAME.
     let enteredString = document.getElementById('searchChannel').value;
     const platform = document.getElementById('topBarSelectPlatform').value;
-    if (enteredString.includes('.com/') || enteredString.includes('.tv/')) {
+
+    if (enteredString.includes('/')) {
       // user entered link instead of just channel name/ID
       const lastSlash = enteredString.lastIndexOf('/') + 1;
       enteredString = enteredString.substring(lastSlash, enteredString.length);
     }
+
     const errorMessage = this.errorHandler(enteredString, platform);
     if (errorMessage) {
       this.props.addAlert(errorMessage);
       return;
     }
+
     document.getElementById('searchChannel').value = '';
     const URL = window.location.hash;
     window.history.pushState('', '', `${URL}#${enteredString}(${platform})`);
-    this.props.openIt();
+    this.props.openStream();
+  };
+
+  handleKeyDown = e => {
+    const enterCharCode = 13;
+    const pressedKeyCode = e.keyCode;
+    if (pressedKeyCode === enterCharCode) {
+      this.addStream();
+    }
   };
 
   render() {
@@ -74,9 +84,8 @@ class SearchSection extends React.Component {
         <input 
           id="searchChannel" 
           placeholder="Enter channel name/ID..."
-          onKeyDown={(event) => enterPressEvent(event, this.addStream)}
+          onKeyDown={this.handleKeyDown}
           onChange={this.onInputChange}
-
         />
         <SearchIconButton onClick={this.addStream}>
           <SearchIcon />
@@ -89,7 +98,7 @@ class SearchSection extends React.Component {
 SearchSection.propTypes = {
   openedStreams: PropTypes.number.isRequired,
 
-  openIt: PropTypes.func.isRequired,
+  openStream: PropTypes.func.isRequired,
   addAlert: PropTypes.func.isRequired
 };
 
@@ -99,7 +108,7 @@ function mapStateToProps({ openedStreams }) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    openIt: () => {
+    openStream: () => {
       dispatch({ type: 'STREAM - OPEN' });
     },
     addAlert: message => {

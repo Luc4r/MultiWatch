@@ -3,16 +3,19 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { VideoMenuButton } from './styled/VideoMenu';
-import { getWindowWidth, getWindowHeight } from './utils/windowProperties';
+import { 
+  getWindowHeight, 
+  getVideoAreaWidth 
+} from './utils/documentProperties';
 import CloseIcon from './utils/svg-icons/close';
 import PinIcon from './utils/svg-icons/pin';
 
 class MoveAndResize extends React.Component {
   componentDidMount() {
-    const { enteredName, pinnedStreamNames } = this.props;
-    const videoElement = document.getElementById(enteredName);
-    if (pinnedStreamNames.includes(enteredName)) {
-      document.getElementById(`stream${enteredName}`).style.pointerEvents = 'auto';
+    const { videoElementId, pinnedStreamNames } = this.props;
+    const videoElement = document.getElementById(videoElementId);
+    if (pinnedStreamNames.includes(videoElementId)) {
+      document.getElementById(`stream${videoElementId}`).style.pointerEvents = 'auto';
       videoElement.style.transitionDuration = '0.5s';
       videoElement.style.zIndex = 0;
       this.changeVideoPosition();
@@ -25,17 +28,20 @@ class MoveAndResize extends React.Component {
       setTimeout(() => {
         this.changeVideoPosition();
         this.changeVideoSizes();
-      });
+      }); // wait for props update
     }
     return true;
   };
 
   getStoragedProperties = stream => {
-    let { left, top, width, height } = JSON.parse(localStorage.getItem(`${stream}Properties`));
-    const marginRight = document.getElementById('videoArea').style.width;
-    let videoAreaWidth = parseInt(marginRight, 10);
-    if (marginRight === '100%' || !marginRight) videoAreaWidth = getWindowWidth();
-    if (left + width + 5 > videoAreaWidth || top + height + 5 > getWindowHeight()) {
+    let { 
+      left, top, width, height 
+    } = JSON.parse(localStorage.getItem(`${stream}Properties`));
+    const videoAreaPadding = 5;
+    if (
+      left + width + videoAreaPadding > getVideoAreaWidth() || 
+      top + height + videoAreaPadding > getWindowHeight()
+    ) {
       left = 10;
       top = 10;
       width = 320;
@@ -58,13 +64,9 @@ class MoveAndResize extends React.Component {
         left = '50%';
       }
     } else if (videoLayout === 'vertical') {
-      if (i === 2 && pinnedStreams === 2) top = '50%';
-      else if (pinnedStreams === 3) top = `${33.33 * (i - 1)}%`;
-      else if (pinnedStreams === 4) top = `${25 * (i - 1)}%`;
+      top = `${(100 / pinnedStreams).toFixed(2) * (i - 1)}%`;
     } else if (videoLayout === 'horizontal') {
-      if (i === 2 && pinnedStreams === 2) left = '50%';
-      else if (pinnedStreams === 3) left = `${33.33 * (i - 1)}%`;
-      else if (pinnedStreams === 4) left = `${25 * (i - 1)}%`;
+      left = `${(100 / pinnedStreams).toFixed(2) * (i - 1)}%`;
     }
     return { top, left };
   };
@@ -81,13 +83,9 @@ class MoveAndResize extends React.Component {
         width = '50%';
       }
     } else if (videoLayout === 'vertical') {
-      if (pinnedStreams === 2) height = '50%';
-      else if (pinnedStreams === 3) height = '33.33%';
-      else if (pinnedStreams === 4) height = '25%';
+      height = `${(100 / pinnedStreams).toFixed(2)}%`;
     } else if (videoLayout === 'horizontal') {
-      if (pinnedStreams === 2) width = '50%';
-      else if (pinnedStreams === 3) width = '33.33%';
-      else if (pinnedStreams === 4) width = '25%';
+      width = `${(100 / pinnedStreams).toFixed(2)}%`;
     }
     return { height, width };
   };
@@ -95,10 +93,9 @@ class MoveAndResize extends React.Component {
   changeVideoPosition = () => {
     const { pinnedStreamNames, pinnedStreams } = this.props;
     const dividedPinnedStreamNames = pinnedStreamNames.split(' ');
-    let element;
     for (let i = 1; i <= pinnedStreams; i += 1) {
       const { top, left } = this.getNewVideoPosition(i, pinnedStreams);
-      element = document.getElementById(dividedPinnedStreamNames[i]);
+      const element = document.getElementById(dividedPinnedStreamNames[i]);
       element.style.top = top;
       element.style.left = left;
     }
@@ -107,10 +104,9 @@ class MoveAndResize extends React.Component {
   changeVideoSizes = () => {
     const { pinnedStreamNames, pinnedStreams, videoLayout } = this.props;
     const dividedPinnedStreamNames = pinnedStreamNames.split(' ');
-    let element;
     for (let i = 1; i <= pinnedStreams; i += 1) {
       const { height, width } = this.getNewVideoSize(i, pinnedStreams);
-      element = document.getElementById(dividedPinnedStreamNames[i]);
+      const element = document.getElementById(dividedPinnedStreamNames[i]);
       element.style.width = width;
       element.style.height = height;
       if (pinnedStreams === 3 && i === 3 && videoLayout === 'default') {
@@ -120,52 +116,47 @@ class MoveAndResize extends React.Component {
   };
 
   pinVideo = () => {
-    const { enteredName } = this.props;
-    const videoElement = document.getElementById(enteredName);
-    // SPECIAL ACTIONS
+    const { videoElementId } = this.props;
+    const videoElement = document.getElementById(videoElementId);
     if (this.props.pinnedStreams === 4) {
       this.props.addAlert(`You cannot pin more than 4 streams!`);
       return;
     }
-    // UPDATE VIDEO DATA
     this.props.setGrandParentState({ isPinned: true });
-    document.getElementById(`stream${enteredName}`).style.pointerEvents = 'auto';
+    document.getElementById(`stream${videoElementId}`).style.pointerEvents = 'auto';
     videoElement.style.transitionDuration = '0.5s';
     videoElement.style.zIndex = 0;
-    this.props.pinIt(enteredName);
-    // WAIT FOR PROPS UPDATE
+    this.props.pinIt(videoElementId);
     setTimeout(() => {
       this.changeVideoPosition();
       this.changeVideoSizes();
-    });
+    }); // wait for props update
   };
 
   unpinVideo = () => {
-    const { enteredName, zIndex } = this.props;
-    const videoElement = document.getElementById(enteredName);
+    const { videoElementId, zIndex } = this.props;
+    const videoElement = document.getElementById(videoElementId);
     this.props.setGrandParentState({ isPinned: false });
     videoElement.style.zIndex = zIndex;
     // Restore previous position and size if possible
-    const { left, top, width, height } = this.getStoragedProperties(enteredName);
+    const { left, top, width, height } = this.getStoragedProperties(videoElementId);
     videoElement.style.left = `${left}px`;
     videoElement.style.width = `${width}px`;
     videoElement.style.top = `${top}px`;
     videoElement.style.height = `${height}px`;
-    this.props.unpinIt(enteredName);
-    // WAIT FOR PROPS UPDATE
+    this.props.unpinIt(videoElementId);
     setTimeout(() => {
       this.changeVideoPosition();
       this.changeVideoSizes();
-    });
-    // After unpin remove any interaction delay
+    }); // wait for props update
     setTimeout(() => {
       videoElement.style.transitionDuration = '0s';
-    }, 500);
+    }, 500); // 0.5s transition
   };
 
   closeStream = () => {
-    const { enteredName } = this.props;
-    const videoElement = document.getElementById(enteredName);
+    const { videoElementId } = this.props;
+    const videoElement = document.getElementById(videoElementId);
     videoElement.style.pointerEvents = 'none';
     if (this.props.grandParentState.isPinned) {
       this.unpinVideo();
@@ -176,7 +167,7 @@ class MoveAndResize extends React.Component {
       this.closeChat(); // CLOSE CHAT WHEN NO STREAMS OPENED
     }
     setTimeout(() => {
-      const newURL = window.location.hash.replace(`#${enteredName}`, '');
+      const newURL = window.location.hash.replace(`#${videoElementId}`, '');
       if (newURL) {
         window.history.pushState('', '', newURL);
       } else {
@@ -184,10 +175,10 @@ class MoveAndResize extends React.Component {
       }
       this.props.closeStream();
       // STORAGE CLEAR DATA
-      localStorage.removeItem(`${enteredName}State`);
-      localStorage.removeItem(`${enteredName}MenuState`);
-      localStorage.removeItem(`${enteredName}Properties`);
-    }, 500);
+      localStorage.removeItem(`${videoElementId}State`);
+      localStorage.removeItem(`${videoElementId}MenuState`);
+      localStorage.removeItem(`${videoElementId}Properties`);
+    }, 500); // 0.5s opacity transition
   };
 
   closeChat = () => {
@@ -196,16 +187,15 @@ class MoveAndResize extends React.Component {
     chatElement.style.width = `0px`;
     setTimeout(() => {
       chatElement.style.display = 'none';
-    }, 500);
+    }, 500); // 0.5s transition
     document.getElementById('videoArea').style.width = '100%';
   };
 
   render() {
     const { menuVisibility, grandParentState } = this.props;
-    let pinOrUnpinFunction = this.pinVideo;
-    if (grandParentState.isPinned) {
-      pinOrUnpinFunction = this.unpinVideo;
-    }
+    const pinOrUnpinFunction = grandParentState.isPinned
+      ? this.unpinVideo
+      : this.pinVideo;
 
     return (
       <div style={{ visibility: menuVisibility }}>
@@ -215,9 +205,7 @@ class MoveAndResize extends React.Component {
           onKeyDown={this.closeStream}
           role="presentation"
         >
-          <div>
-            <CloseIcon />
-          </div>
+          <CloseIcon />
         </VideoMenuButton>
         <VideoMenuButton
           style={{ marginLeft: '2px' }}
@@ -225,9 +213,7 @@ class MoveAndResize extends React.Component {
           onKeyDown={pinOrUnpinFunction}
           role="presentation"
         >
-          <div>
-            <PinIcon />
-          </div>
+          <PinIcon />
         </VideoMenuButton>
       </div>
     );
@@ -239,7 +225,7 @@ MoveAndResize.propTypes = {
   grandParentState: PropTypes.shape({
     isPinned: PropTypes.bool
   }).isRequired,
-  enteredName: PropTypes.string.isRequired,
+  videoElementId: PropTypes.string.isRequired,
   zIndex: PropTypes.number.isRequired,
   setGrandParentState: PropTypes.func.isRequired,
 

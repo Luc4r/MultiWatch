@@ -7,7 +7,6 @@ const BackgroundWrapper = styled.div`
   height: 100%;
   min-height: 400px;
   z-index: 0;
-  background-color: #212121;
 
   #backgroundSVG {
     position: absolute; 

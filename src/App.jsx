@@ -6,6 +6,7 @@ import Background from './Background';
 import TopBar from './TopBar';
 import StreamArea from './StreamArea';
 import AlertBox from './AlertBox';
+import createCustomStore from './utils/createStore';
 import {   
   AppWrapper, 
   RenderAppWrapper,
@@ -13,8 +14,6 @@ import {
   RenderAppButton,
   RenderAppDescriptionWrapper  
 } from './styled/App';
-import createCustomStore from './utils/createStore';
-
 // Remove duplicates from URL
 const streamsNoDuplicates = Array.from(new Set(window.location.hash.split('#')));
 if (streamsNoDuplicates.length > 1) {
@@ -52,8 +51,8 @@ class App extends React.Component {
     return true;
   };
 
-  renderApp = changeStoreState => {
-    if (changeStoreState) {
+  renderApp = restoreSession => {
+    if (restoreSession) {
       window.history.pushState('', '', localStorage.getItem('openedStreams'));
       store.dispatch({ type: 'STORE - CHANGE STATE', state: cachedStoreState });
     } else {
@@ -65,6 +64,7 @@ class App extends React.Component {
 
   render() {
     const { shouldRender } = this.state;
+    
     return (
       <Provider store={store}>
         <AppWrapper>
