@@ -30,7 +30,7 @@ const Chat = ({ selectedChannelName, isLoading }) => {
     />
   ) : (
     <ChatErrorWrapper>
-      <iframe title="justLoad" onLoad={() => isLoading(false)} />
+      <iframe title="justLoad" src={link} onLoad={() => isLoading(false)} />
       <p>
         No chats available... <br />
         <br />
