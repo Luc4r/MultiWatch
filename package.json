@@ -38,7 +38,8 @@
     "react-dom": "^16.0.0",
     "react-redux": "^5.0.6",
     "redux": "^3.7.2",
-    "styled-components": "^2.2.3"
+    "styled-components": "^2.2.3",
+    "triangulr": "^1.0.0"
   },
   "scripts": {
     "prettify": "prettier --write --single-quote --print-width=100 --arrow-parens=always **\\*.jsx",
