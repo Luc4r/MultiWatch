@@ -19,4 +19,4 @@ const BackgroundWrapper = styled.div`
   }
 `;
 
-export { BackgroundWrapper };
+export default BackgroundWrapper;

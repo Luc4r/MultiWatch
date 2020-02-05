@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Triangulr from 'triangulr';
 
-import { BackgroundWrapper } from './styled/Background';
+import BackgroundWrapper from './styled/Background';
 
 class Background extends React.Component {
   getBackgroundColor = () => {

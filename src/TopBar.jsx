@@ -46,7 +46,7 @@ class TopBar extends React.Component {
       <TopBarWrapper id="topBar">
         <LogoAndOptionsWrapper>
           <Logo onClick={this.toggleTopBarVisibility}>
-            <img src={logo} alt="Logo" />
+            <img src={`.${logo}`} alt="Logo" />
           </Logo>
           <Stripe>
             <OptionsButton onClick={this.toggleMenuVisibility}>
