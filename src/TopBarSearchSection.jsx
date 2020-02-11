@@ -78,8 +78,8 @@ class SearchSection extends React.Component {
         <select id="topBarSelectPlatform">
           <option value="t">Twitch</option>
           <option value="yt">YouTube - WIP</option>
-          <option value="sc">Smashcast</option>
           <option value="m">Mixer</option>
+          <option value="sc">Smashcast</option>
         </select>
         <input 
           id="searchChannel" 

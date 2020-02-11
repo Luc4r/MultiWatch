@@ -2,7 +2,7 @@
  * Get youtube channel data from firebase server
  * @param {string} enteredChannel
  * @returns {{ error:number, errorMessage:string }}
- * @returns {{ channelID:string, channelName:string, customUrl:string }}
+ * @returns {{ channelID:string, channelName:string, customUrl:string, livestreamUrl:string }}
  */
 const getChannelIDAndName = async (enteredChannel) => {
   const firebaseFunction = "https://us-central1-multiwatch-267321.cloudfunctions.net/getChannelNameAndID";

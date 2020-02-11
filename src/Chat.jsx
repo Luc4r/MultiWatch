@@ -1,25 +1,43 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { ChatErrorWrapper } from './styled/ChatBox';
 
-const Chat = ({ selectedChannelName, isLoading }) => {
-  const streamName = selectedChannelName.slice(0, selectedChannelName.indexOf(','));
+const Chat = ({ selectedChannelName, isLoading, darkMode }) => {
+  const streamName = selectedChannelName.slice(
+    0, 
+    selectedChannelName.indexOf(',')
+  );
   const streamPlatform = selectedChannelName.slice(
     selectedChannelName.indexOf(',') + 1,
     selectedChannelName.length
   );
   // Platforms:
-  const smashcast = 'sc';
+  const youtube = 'yt';
   const mixer = 'm';
-  let link = `https://www.twitch.tv/embed/${streamName}/chat?darkpopout`;
-  if (streamPlatform === smashcast) {
-    link = `https://www.smashcast.tv/embed/chat/${streamName}?autoconnect=true`;
+  const smashcast = 'sc';
+  let link = (darkMode)
+    ? `https://www.twitch.tv/embed/${streamName}/chat?darkpopout`
+    : `https://www.twitch.tv/embed/${streamName}/chat`;
+  if (streamPlatform === youtube) {
+    const channelData = JSON.parse(localStorage.getItem(
+      `${streamName}(${streamPlatform})State`
+    ));
+    if (channelData && channelData.livestreamUrl) {
+      link = `https://www.youtube.com/live_chat?v=${channelData.livestreamUrl}&embed_domain=${window.location.hostname}`;
+      // addAlert(`
+      //   Pssst, did you know that YouTube supports dark mode?\n
+      //   There is a link how to enable it: https://support.google.com/youtube/answer/7385323
+      // `);
+    }
   } else if (streamPlatform === mixer) {
     link = `https://mixer.com/embed/chat/${streamName}`;
+  } else if (streamPlatform === smashcast) {
+    link = `https://www.smashcast.tv/embed/chat/${streamName}?autoconnect=true`;
   }
 
-  return streamName ? (
+  return (streamPlatform !== youtube || !link.includes("twitch")) ? (
     <iframe
       title={`${streamName}${streamPlatform}`}
       src={link}
@@ -32,9 +50,10 @@ const Chat = ({ selectedChannelName, isLoading }) => {
     <ChatErrorWrapper>
       <iframe title="justLoad" src={link} onLoad={() => isLoading(false)} />
       <p>
-        No chats available... <br />
+        No chat available... 
         <br />
-        Still working on youtube comments... D:
+        <br />
+        Are you sure you have provided correct channel ID/name? 
       </p>
     </ChatErrorWrapper>
   );
@@ -42,7 +61,13 @@ const Chat = ({ selectedChannelName, isLoading }) => {
 
 Chat.propTypes = {
   selectedChannelName: PropTypes.string.isRequired,
-  isLoading: PropTypes.func.isRequired
+  isLoading: PropTypes.func.isRequired,
+
+  darkMode: PropTypes.bool.isRequired
 };
 
-export default Chat;
+function mapStateToProps({ darkMode }) {
+  return { darkMode };
+};
+
+export default connect(mapStateToProps)(Chat);

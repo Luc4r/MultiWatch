@@ -345,16 +345,18 @@ class Video extends React.Component {
 
     localStorage.setItem(`${videoElementId}State`, JSON.stringify(this.state));
     localStorage.setItem(`${videoElementId}Properties`, JSON.stringify(this.properties));
-
+    // Platforms:
+    const youtube = 'yt';
+    const mixer = 'm';
+    const smashcast = 'sc';
     let link = `https://player.twitch.tv/?&channel=${channelID}`;
-    if (platform === 'yt') {
+    if (platform === youtube) {
       link = `https://www.youtube.com/embed/live_stream?channel=${channelID}&autoplay=1`;
-    } else if (platform === 'm') {
+    } else if (platform === mixer) {
       link = `https://mixer.com/embed/player/${channelID}`;
-    } else if (platform === 'sc') {
+    } else if (platform === smashcast) {
       link = `https://www.smashcast.tv/embed/${channelID}`;
     }
-    
 
     return (
       <VideoWrapper 
