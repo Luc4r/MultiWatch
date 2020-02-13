@@ -2,12 +2,16 @@ import styled from 'styled-components';
 
 const TooltipWrapper = styled.div`
   position: relative;
+  height: 80%;
+  display: flex;
+  align-items: center;
   margin: 0 4px 0 auto;
   transition-duration: 0.3s;
   cursor: help;
 
   & > svg {
     stroke: ${props => props.darkMode ? "#FFFFFF" : "#000000"};
+    transition-duration: 0.3s;
   }
 
   &:hover > * {

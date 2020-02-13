@@ -20,7 +20,7 @@ class OptionsMenu extends React.Component {
     clickedElement.setAttribute("disabled", "disabled");
     setTimeout(() => {
       clickedElement.removeAttribute("disabled");
-    }, 800);  // 0.8s delay to prevent spamming
+    }, 600);  // 0.6s delay to prevent spamming
   };
 
   render() {

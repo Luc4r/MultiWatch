@@ -74,7 +74,6 @@ const ChatErrorWrapper = styled.span`
   align-items: center;
   width: 100%;
   height: calc(100% - 50px);
-  margin-top: 50px;
   background-color: #111111;
   opacity: 0.8;
   color: white;
