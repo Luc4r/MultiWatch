@@ -4,21 +4,26 @@ import PropTypes from 'prop-types';
 
 import { TooltipWrapper, TooltipContentWrapper } from '../styled/Tooltip';
 
-const withTooltip = (WrappedComponent) => {
-  const HOC = (props) => (
-    <TooltipWrapper darkMode={props.darkMode}>
-      <WrappedComponent {...props} />
-      <TooltipContentWrapper darkMode={props.darkMode}>
-        {props.children}
-      </TooltipContentWrapper>
-    </TooltipWrapper>
-  );
+const withTooltip = (WrappedComponent, position = 'center') => {
+  const HOC = ({ id, darkMode, ...props }) => {
+    const optionalID = id && { id };
+    return (
+      <TooltipWrapper {...optionalID} darkMode={darkMode}>
+        <WrappedComponent {...props} />
+        <TooltipContentWrapper darkMode={darkMode} position={position}>
+          {props.children}
+        </TooltipContentWrapper>
+      </TooltipWrapper>
+    );
+  };
 
   HOC.defaultProps = {
+    id: '',
     children: []
   };
 
   HOC.propTypes = {
+    id: PropTypes.string,
     children: PropTypes.oneOfType([
       PropTypes.arrayOf(PropTypes.node),
       PropTypes.node
@@ -32,10 +37,6 @@ const withTooltip = (WrappedComponent) => {
   };
 
   return connect(mapStateToProps)(HOC);
-};
-
-withTooltip.propTypes = {
-  darkMode: PropTypes.bool.isRequired
 };
 
 export default withTooltip;

@@ -19,7 +19,7 @@ import {
 } from './styled/ChatBox';
 import { DividerWrapper } from './styled/Tooltip';
 
-const HelpWrapper = withTooltip(HelpIcon);
+const HelpWrapper = withTooltip(HelpIcon, 'right');
 
 class ChatBox extends React.Component {
   constructor() {
@@ -39,6 +39,7 @@ class ChatBox extends React.Component {
       : initialLastValues;
 
     this.canChangeWidth = false;
+    this.helperRef = React.createRef();
   };
 
   componentDidMount() {
@@ -96,12 +97,14 @@ class ChatBox extends React.Component {
     const { lastWidth } = this.lastValues;
     const chatElement = document.getElementById('chatBox');
     const videoAreaElement = document.getElementById('videoArea');
+    const chatHelpElement = document.getElementById('chatHelp');
     const videoWidth = getWindowWidth() - parseInt(lastWidth, 10);
     chatElement.style.transitionDuration = '0.5s';
     chatElement.style.display = 'initial';
     videoAreaElement.style.transitionDuration = '0.5s';
     setTimeout(() => {
       chatElement.style.width = lastWidth;
+      chatHelpElement.style.opacity = 1;
     }); // wait for transitionDuration property
     videoAreaElement.style.width = `${videoWidth}px`;
     setTimeout(() => {
@@ -113,11 +116,13 @@ class ChatBox extends React.Component {
   hideChat = () => {
     const chatElement = document.getElementById('chatBox');
     const videoAreaElement = document.getElementById('videoArea');
+    const chatHelpElement = document.getElementById('chatHelp');
     this.lastValues = { ...this.lastValues, lastWidth: chatElement.style.width };
     chatElement.style.transitionDuration = '0.5s';
     chatElement.style.width = `0px`;
     videoAreaElement.style.transitionDuration = '0.5s';
     videoAreaElement.style.width = `100%`;
+    chatHelpElement.style.opacity = 0;
     setTimeout(() => {
       chatElement.style.display = 'none';
       videoAreaElement.style.transitionDuration = '0s';
@@ -218,7 +223,7 @@ class ChatBox extends React.Component {
             >
               {options}
             </ChatSelectWrapper>
-            <HelpWrapper>
+            <HelpWrapper id="chatHelp">
               <DividerWrapper>Twitch</DividerWrapper>
               <p>full support</p>
               <DividerWrapper>Youtube</DividerWrapper>

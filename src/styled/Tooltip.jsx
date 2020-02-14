@@ -1,5 +1,16 @@
 import styled from 'styled-components';
 
+const handleLeftTooltipValue = position => {
+  switch (position) {
+    case 'left':
+      return '0';
+    case 'center':
+      return '50%';
+    default:
+      return 'auto';
+  }
+};
+
 const TooltipWrapper = styled.div`
   position: relative;
   height: 80%;
@@ -43,9 +54,11 @@ const TooltipContentWrapper = styled.div`
     content: " ";
     position: absolute;
     bottom: 100%;
-    right: 0;
+    left: ${props => handleLeftTooltipValue(props.position)};
+    right: ${props => props.position === 'right' ? 0 : 'auto'};
+    transform: ${props => props.position === 'center' ? 'translateX(-50%)' : 'none'};
     border: 4px solid rgba(0, 0, 0, 0);
-    border-bottom: 4px solid ${props => props.darkMode ? "#000000" : "#EEEEEE"};
+    border-bottom: 4px solid ${props => props.darkMode ? "#111111" : "#EEEEEE"};
   }
 `;
 
