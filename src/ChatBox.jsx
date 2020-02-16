@@ -20,6 +20,14 @@ import {
 import { DividerWrapper } from './styled/Tooltip';
 
 const HelpWrapper = withTooltip(HelpIcon, 'right');
+const HelpWrapperStyle = {
+  margin: '0 4px 0 auto',
+  height: '80%',
+  display: 'flex',
+  alignItems: 'center',
+  transitionDuration: '0.3s',
+  cursor: 'help'
+};
 
 class ChatBox extends React.Component {
   constructor() {
@@ -223,7 +231,7 @@ class ChatBox extends React.Component {
             >
               {options}
             </ChatSelectWrapper>
-            <HelpWrapper id="chatHelp">
+            <HelpWrapper id="chatHelp" style={HelpWrapperStyle}>
               <DividerWrapper>Twitch</DividerWrapper>
               <p>full support</p>
               <DividerWrapper>Youtube</DividerWrapper>
