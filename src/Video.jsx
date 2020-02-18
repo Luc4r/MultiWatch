@@ -56,8 +56,9 @@ class Video extends React.Component {
     if (this.props.platform !== 'yt') {
       return;
     }
+
     const channelData = await getChannelIDAndName(this.state.channelID);
-    this.setState(channelData);
+    this.setState({ ...channelData, isLoading: false });
   };
 
   componentDidMount() {
@@ -385,7 +386,7 @@ class Video extends React.Component {
           scrolling="false"
           allowFullScreen="true"
           frameBorder="0"
-          onLoad={() => this.setState({ isLoading: false })}
+          onLoad={() => platform !== 'yt' && this.setState({ isLoading: false })}
         />
       </VideoWrapper>
     );
