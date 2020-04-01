@@ -2,8 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { VideoMenuMoveResizeWrapper, VideoMenuButton } from './styled/VideoMenu';
+import withTooltip from './utils/withTooltip';
 import MoveIcon from './utils/svg-icons/move';
 import ResizeIcon from './utils/svg-icons/resize';
+
+const MoveIconWithTooltip = withTooltip(MoveIcon, 'left');
+const ResizeIconWithTooltip = withTooltip(ResizeIcon, 'left');
 
 class MoveAndResize extends React.Component {
   constructor() {
@@ -46,7 +50,9 @@ class MoveAndResize extends React.Component {
             onClick={this.checkboxClick}
           />
           <VideoMenuButton style={{ marginRight: '2px' }}>
-            <MoveIcon />
+            <MoveIconWithTooltip>
+              Move
+            </MoveIconWithTooltip>
           </VideoMenuButton>
         </label>
         <label htmlFor={`size${videoElementId}`} className="labl">
@@ -57,7 +63,9 @@ class MoveAndResize extends React.Component {
             onClick={this.checkboxClick}
           />
           <VideoMenuButton style={{ marginRight: '2px' }}>
-            <ResizeIcon />
+            <ResizeIconWithTooltip>
+              Resize
+            </ResizeIconWithTooltip>
           </VideoMenuButton>
         </label>
       </VideoMenuMoveResizeWrapper>

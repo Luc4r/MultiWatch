@@ -67,6 +67,10 @@ const OptionsButton = styled.button`
   outline: inherit;
   transition-duration: 0.2s;
 
+  svg {
+    stroke: #FFFFFF;
+  }
+
   &:hover {
     background-color: #7199ed;
     cursor: pointer;
@@ -82,10 +86,15 @@ const SearchInputWrapper = styled.div`
     padding: 3px 5px;
     height: 26px;
     box-sizing: border-box;
-    background-color: #eeeeee;
+    background-color: ${props => props.darkMode ? '#444444' : '#EEEEEE'};
     border: 1px solid #444444;
     outline: none;
-    color: #000000;
+    color: ${props => props.darkMode ? '#FFFFFF' : '#232323'};
+    transition-duration: 0.3s;
+  }
+
+  select > option:nth-child(2n) {
+    background-color: ${props => props.darkMode ? "#555555" : "#EEEEEE"};
   }
 
   input {
@@ -94,8 +103,11 @@ const SearchInputWrapper = styled.div`
     width: 180px;
     outline: none;
     box-sizing: border-box;
+    color: ${props => props.darkMode ? '#FFFFFF' : '#000000'};
+    background-color: ${props => props.darkMode ? '#444444' : '#EEEEEE'};
     border: 1px solid #444444;
     border-right: 0;
+    transition-duration: 0.3s;
   }
 `;
 
@@ -105,9 +117,16 @@ const SearchIconButton = styled.button`
   width: 26px;
   padding: 0px 2px;
   box-sizing: border-box;
-  background-color: #ffffff;
+  background-color: ${props => props.darkMode ? '#444444' : '#EEEEEE'};
   border: 1px solid #444444 !important;
-  border-left: none !important;
+  border-left: 1px dashed #444444 !important;
+  transition-duration: 0.3s;
+
+  svg {
+    height: 80%;
+    stroke: ${props => props.darkMode ? '#FFFFFF' : '#000000'};
+    transition-duration: 0.3s;
+  }
 `;
 
 export {

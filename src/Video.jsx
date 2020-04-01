@@ -56,8 +56,9 @@ class Video extends React.Component {
     if (this.props.platform !== 'yt') {
       return;
     }
+
     const channelData = await getChannelIDAndName(this.state.channelID);
-    this.setState(channelData);
+    this.setState({ ...channelData, isLoading: false });
   };
 
   componentDidMount() {
@@ -345,16 +346,18 @@ class Video extends React.Component {
 
     localStorage.setItem(`${videoElementId}State`, JSON.stringify(this.state));
     localStorage.setItem(`${videoElementId}Properties`, JSON.stringify(this.properties));
-
+    // Platforms:
+    const youtube = 'yt';
+    const mixer = 'm';
+    const smashcast = 'sc';
     let link = `https://player.twitch.tv/?&channel=${channelID}`;
-    if (platform === 'yt') {
+    if (platform === youtube) {
       link = `https://www.youtube.com/embed/live_stream?channel=${channelID}&autoplay=1`;
-    } else if (platform === 'm') {
+    } else if (platform === mixer) {
       link = `https://mixer.com/embed/player/${channelID}`;
-    } else if (platform === 'sc') {
+    } else if (platform === smashcast) {
       link = `https://www.smashcast.tv/embed/${channelID}`;
     }
-    
 
     return (
       <VideoWrapper 
@@ -383,7 +386,7 @@ class Video extends React.Component {
           scrolling="false"
           allowFullScreen="true"
           frameBorder="0"
-          onLoad={() => this.setState({ isLoading: false })}
+          onLoad={() => platform !== 'yt' && this.setState({ isLoading: false })}
         />
       </VideoWrapper>
     );

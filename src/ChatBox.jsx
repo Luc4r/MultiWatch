@@ -8,12 +8,26 @@ import { getWindowWidth } from './utils/documentProperties';
 import getCoordinate from './utils/getCoordinate';
 import { iframeEventsDisable, iframeEventsEnable } from './utils/iframeEvents';
 import getStreamNames from './utils/getStreamNames';
+import withTooltip from './utils/withTooltip';
+import HelpIcon from './utils/svg-icons/help';
 import { 
   ChatBoxWrapper,
+  ChatTopBarWrapper,
   ChatSelectWrapper,
   ChatChangeWidthWrapper,
   ChatChangeWidthLine
 } from './styled/ChatBox';
+import { DividerWrapper } from './styled/Tooltip';
+
+const HelpWrapper = withTooltip(HelpIcon, 'right');
+const HelpWrapperStyle = {
+  margin: '0 4px 0 auto',
+  height: '80%',
+  display: 'flex',
+  alignItems: 'center',
+  transitionDuration: '0.3s',
+  cursor: 'help'
+};
 
 class ChatBox extends React.Component {
   constructor() {
@@ -33,6 +47,7 @@ class ChatBox extends React.Component {
       : initialLastValues;
 
     this.canChangeWidth = false;
+    this.helperRef = React.createRef();
   };
 
   componentDidMount() {
@@ -90,12 +105,14 @@ class ChatBox extends React.Component {
     const { lastWidth } = this.lastValues;
     const chatElement = document.getElementById('chatBox');
     const videoAreaElement = document.getElementById('videoArea');
+    const chatHelpElement = document.getElementById('chatHelp');
     const videoWidth = getWindowWidth() - parseInt(lastWidth, 10);
     chatElement.style.transitionDuration = '0.5s';
     chatElement.style.display = 'initial';
     videoAreaElement.style.transitionDuration = '0.5s';
     setTimeout(() => {
       chatElement.style.width = lastWidth;
+      chatHelpElement.style.opacity = 1;
     }); // wait for transitionDuration property
     videoAreaElement.style.width = `${videoWidth}px`;
     setTimeout(() => {
@@ -107,11 +124,13 @@ class ChatBox extends React.Component {
   hideChat = () => {
     const chatElement = document.getElementById('chatBox');
     const videoAreaElement = document.getElementById('videoArea');
+    const chatHelpElement = document.getElementById('chatHelp');
     this.lastValues = { ...this.lastValues, lastWidth: chatElement.style.width };
     chatElement.style.transitionDuration = '0.5s';
     chatElement.style.width = `0px`;
     videoAreaElement.style.transitionDuration = '0.5s';
     videoAreaElement.style.width = `100%`;
+    chatHelpElement.style.opacity = 0;
     setTimeout(() => {
       chatElement.style.display = 'none';
       videoAreaElement.style.transitionDuration = '0s';
@@ -151,21 +170,28 @@ class ChatBox extends React.Component {
   };
 
   render() {
-    const { showChat } = this.props;
+    const { showChat, darkMode } = this.props;
     const { isLoading, selectedValue } = this.state;
-    const selectedChannelName = selectedValue && `${selectedValue.replace(',', '(')})`;
+    const selectedChannelName = 
+      selectedValue && `${selectedValue.replace(',', '(')})`;
     const link = window.location.hash;
+    const chats = getStreamNames();
     // Platforms:
-    const smashcast = 'sc';
-    const mixer = 'm';
     const youtube = 'yt';
-    const chats = getStreamNames().filter(stream => stream.platform !== youtube);
+    const mixer = 'm';
+    const smashcast = 'sc';
 
-    if ((selectedValue === '' || !link.includes(selectedChannelName)) && chats[0]) {
+    if (
+      (selectedValue === "" || !link.includes(selectedChannelName)) &&
+      chats[0]
+    ) {
       // Chat is avaiable but is not selected
       const { channelName, platform } = chats[0];
-      this.setState({ isLoading: true, selectedValue: `${channelName},${platform}` });
-    } else if (selectedValue !== '' && !/\(t\)|\(sc\)|\(m\)/.test(link)) {
+      this.setState({ 
+        isLoading: true, 
+        selectedValue: `${channelName},${platform}` 
+      });
+    } else if (selectedValue !== '' && !/\(yt\)|\(t\)|\(sc\)|\(m\)/.test(link)) {
       // Chat is selected but there are no chats avaiable...
       this.setState({ isLoading: true, selectedValue: '' });
     }
@@ -174,10 +200,12 @@ class ChatBox extends React.Component {
       const { channelName, platform } = chat;
       const name = channelName.charAt(0).toUpperCase() + channelName.slice(1);
       let optionText = `${name} - Twitch`;
-      if (platform === smashcast) {
-        optionText = `${name} - Smashcast`;
+      if (platform === youtube) {
+        optionText = `${name} - Youtube`;
       } else if (platform === mixer) {
         optionText = `${name} - Mixer`;
+      } else if (platform === smashcast) {
+        optionText = `${name} - Smashcast`;
       }
       return (
         <option key={optionText} value={`${channelName},${platform}`}>
@@ -188,20 +216,36 @@ class ChatBox extends React.Component {
 
     return (
       <ChatBoxWrapper id="chatBox">
-        {chats[0] && (
-          <ChatSelectWrapper
-            value={selectedValue}
-            onChange={this.setSelectedChat}
-          >
-            {options}
-          </ChatSelectWrapper>
-        )}
         <ChatChangeWidthWrapper 
           onMouseDown={this.onDown} 
           onTouchStart={this.onDown}
         >
           <ChatChangeWidthLine />
         </ChatChangeWidthWrapper>
+        {chats[0] && (
+          <ChatTopBarWrapper darkMode={darkMode}>
+            <ChatSelectWrapper
+              darkMode={darkMode}
+              value={selectedValue}
+              onChange={this.setSelectedChat}
+            >
+              {options}
+            </ChatSelectWrapper>
+            <HelpWrapper id="chatHelp" style={HelpWrapperStyle}>
+              <DividerWrapper>Twitch</DividerWrapper>
+              <p>full support</p>
+              <DividerWrapper>Youtube</DividerWrapper>
+              <p>
+                dark mode can be activated only on YouTube website itself<br/>
+                <i>(hint: click your profile picture in order to find it)</i>
+              </p>
+              <DividerWrapper>Mixer</DividerWrapper>
+              <p>dark mode not supported</p>
+              <DividerWrapper>Smashcast</DividerWrapper>
+              <p>dark mode not supported</p>
+            </HelpWrapper>
+          </ChatTopBarWrapper>
+        )}
         {isLoading && showChat && (
           <Loading />
         )}
@@ -217,11 +261,12 @@ class ChatBox extends React.Component {
 };
 
 ChatBox.propTypes = {
-  showChat: PropTypes.bool.isRequired
+  showChat: PropTypes.bool.isRequired,
+  darkMode: PropTypes.bool.isRequired
 };
 
-function mapStateToProps({ showChat }) {
-  return { showChat };
+function mapStateToProps({ showChat, darkMode }) {
+  return { showChat, darkMode };
 };
 
 export default connect(mapStateToProps)(ChatBox);

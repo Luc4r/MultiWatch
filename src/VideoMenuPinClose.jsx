@@ -7,8 +7,12 @@ import {
   getWindowHeight, 
   getVideoAreaWidth 
 } from './utils/documentProperties';
+import withTooltip from './utils/withTooltip';
 import CloseIcon from './utils/svg-icons/close';
 import PinIcon from './utils/svg-icons/pin';
+
+const CloseIconWithTooltip = withTooltip(CloseIcon, 'right');
+const PinIconWithTooltip = withTooltip(PinIcon, 'right');
 
 class MoveAndResize extends React.Component {
   componentDidMount() {
@@ -205,7 +209,9 @@ class MoveAndResize extends React.Component {
           onKeyDown={this.closeStream}
           role="presentation"
         >
-          <CloseIcon />
+          <CloseIconWithTooltip>
+            Close
+          </CloseIconWithTooltip>
         </VideoMenuButton>
         <VideoMenuButton
           style={{ marginLeft: '2px' }}
@@ -213,7 +219,9 @@ class MoveAndResize extends React.Component {
           onKeyDown={pinOrUnpinFunction}
           role="presentation"
         >
-          <PinIcon />
+          <PinIconWithTooltip>
+            {grandParentState.isPinned ? 'Unpin' : 'Pin'}
+          </PinIconWithTooltip>
         </VideoMenuButton>
       </div>
     );

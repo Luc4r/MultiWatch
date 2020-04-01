@@ -6,29 +6,42 @@ const ChatBoxWrapper = styled.div`
   right: 0;
   height: 100%;
   box-sizing: border-box;
-  background-color: #060f1b;
+  background-color: rgba(44, 44, 44, 0.4);
   display: none;
 
   iframe {
-    margin-top: 50px;
     height: calc(100% - 50px);
   }
 `;
 
+const ChatTopBarWrapper = styled.div`
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &::before {
+    content: " ";
+    width: 32px;
+    margin-right: auto;
+    visibility: hidden;
+  }
+`;
+
 const ChatSelectWrapper = styled.select`
-  position: absolute;
-  top: 10px;
-  left: 0;
-  right: 0;
-  margin: auto;
   width: 50%;
   height: 30px;
   outline: none;
-  color: white;
+  color: ${props => props.darkMode ? "#FFFFFF" : "#000000"};
   text-align: center;
-  transition-duration: 1s;
-  background-color: #444444;
+  transition-duration: 0.3s;
+  background-color: ${props => props.darkMode ? "#444444" : "#FFFFFF"};
   border: 1px solid #222222;
+
+  & > option:nth-child(2n) {
+    background-color: ${props => props.darkMode ? "#555555" : "#EEEEEE"};
+  }
 `;
 
 const ChatChangeWidthWrapper = styled.div`
@@ -60,7 +73,7 @@ const ChatErrorWrapper = styled.span`
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 50px);
   background-color: #111111;
   opacity: 0.8;
   color: white;
@@ -76,8 +89,9 @@ const ChatErrorWrapper = styled.span`
 
 export { 
   ChatBoxWrapper, 
+  ChatTopBarWrapper,
   ChatSelectWrapper, 
   ChatChangeWidthWrapper, 
   ChatChangeWidthLine, 
-  ChatErrorWrapper 
+  ChatErrorWrapper
 };

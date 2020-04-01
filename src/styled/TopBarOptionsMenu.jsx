@@ -166,7 +166,6 @@ const VideosLayoutDescription = styled.p`
 const VideosLayoutCurrentWrapper = styled.i`
   position: absolute;
   width: calc(100% - 12px);
-  bottom: 12px;
   text-align: center;
   font-size: 14px;
   color: #517edb;

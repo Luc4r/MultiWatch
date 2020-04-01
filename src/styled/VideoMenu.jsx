@@ -36,7 +36,7 @@ const VideoMenuButton = styled.div`
   font-size: 12px;
   cursor: pointer;
   transition-duration: 0.3s;
-  background: linear-gradient(rgb(169, 169, 169), rgba(0, 0, 0, 0));
+  background: linear-gradient(rgb(128, 128, 128), rgba(0, 0, 0, 0));
 
   &:hover {
     background: linear-gradient(rgb(109, 109, 109), rgba(0, 0, 0, 0));

@@ -65,6 +65,7 @@ class TopBar extends React.Component {
 
 TopBar.propTypes = {
   isTopBarHidden: PropTypes.bool.isRequired,
+
   toggleTopBar: PropTypes.func.isRequired
 };
 

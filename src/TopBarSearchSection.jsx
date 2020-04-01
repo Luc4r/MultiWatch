@@ -73,13 +73,15 @@ class SearchSection extends React.Component {
   };
 
   render() {
+    const { darkMode } = this.props;
+
     return (
-      <SearchInputWrapper>
+      <SearchInputWrapper darkMode={darkMode}>
         <select id="topBarSelectPlatform">
           <option value="t">Twitch</option>
           <option value="yt">YouTube - WIP</option>
-          <option value="sc">Smashcast</option>
           <option value="m">Mixer</option>
+          <option value="sc">Smashcast</option>
         </select>
         <input 
           id="searchChannel" 
@@ -87,7 +89,7 @@ class SearchSection extends React.Component {
           onKeyDown={this.handleKeyDown}
           onChange={this.onInputChange}
         />
-        <SearchIconButton onClick={this.addStream}>
+        <SearchIconButton onClick={this.addStream} darkMode={darkMode}>
           <SearchIcon />
         </SearchIconButton>
       </SearchInputWrapper>
@@ -97,13 +99,14 @@ class SearchSection extends React.Component {
 
 SearchSection.propTypes = {
   openedStreams: PropTypes.number.isRequired,
+  darkMode: PropTypes.bool.isRequired,
 
   openStream: PropTypes.func.isRequired,
   addAlert: PropTypes.func.isRequired
 };
 
-function mapStateToProps({ openedStreams }) {
-  return { openedStreams };
+function mapStateToProps({ openedStreams, darkMode }) {
+  return { openedStreams, darkMode };
 };
 
 function mapDispatchToProps(dispatch) {
